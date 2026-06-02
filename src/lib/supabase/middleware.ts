@@ -51,6 +51,7 @@ export async function updateSession(request: NextRequest) {
   const isPublicAsset =
     pathname === "/" ||
     pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") || // rotas de API cuidam da própria auth
     pathname === "/manifest.webmanifest" ||
     pathname === "/sw.js" ||
     pathname.startsWith("/icon-");

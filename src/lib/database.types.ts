@@ -27,6 +27,8 @@ export type SubscriptionCycle = "mensal" | "anual" | "trimestral" | "semanal";
 export type UserRole = "user" | "admin";
 export type KycStatus = "nao_enviado" | "pendente" | "aprovado" | "rejeitado";
 export type TransactionScope = "pessoal" | "empresarial";
+export type BillingStatus = "trial" | "ativa" | "atrasada" | "cancelada";
+export type ChargeStatus = "pendente" | "pago" | "expirado" | "falhou" | "cancelado";
 
 type Timestamps = { created_at: string; updated_at: string | null };
 
@@ -130,6 +132,44 @@ export type Transaction = Timestamps & {
   notes: string | null;
   is_recurring: boolean;
   scope: TransactionScope;
+};
+
+export type Plan = {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  price_cents: number;
+  features: string[] | null;
+  active: boolean;
+  sort: number;
+  created_at: string;
+};
+
+export type BillingSubscription = Timestamps & {
+  id: string;
+  user_id: string;
+  plan_id: string | null;
+  status: BillingStatus;
+  billing_enabled: boolean;
+  current_period_end: string | null;
+  next_charge_date: string | null;
+};
+
+export type Charge = {
+  id: string;
+  user_id: string;
+  subscription_id: string | null;
+  plan_id: string | null;
+  amount_cents: number;
+  method: string;
+  status: ChargeStatus;
+  bravive_id: string | null;
+  pix_code: string | null;
+  pix_qrcode: string | null;
+  description: string | null;
+  paid_at: string | null;
+  created_at: string;
 };
 
 export type VaultMeta = Timestamps & {
@@ -260,6 +300,9 @@ export type Database = {
       kyc: TableDef<Kyc>;
       vault_meta: TableDef<VaultMeta>;
       vault_items: TableDef<VaultItem>;
+      plans: TableDef<Plan>;
+      billing_subscriptions: TableDef<BillingSubscription>;
+      charges: TableDef<Charge>;
     };
     Views: Record<string, never>;
     Functions: {

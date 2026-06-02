@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Shield,
   KeyRound,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -63,6 +64,7 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
   {
     title: "Conta",
     items: [
+      { label: "Meu Plano", href: "/plano", icon: Sparkles },
       { label: "Cofre de Senhas", href: "/cofre", icon: KeyRound },
       { label: "Verificação (KYC)", href: "/kyc", icon: ShieldCheck },
       { label: "Configurações", href: "/configuracoes", icon: Settings },
@@ -73,5 +75,8 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
 /** Grupo exibido apenas para administradores. */
 export const adminGroup: { title: string; items: NavItem[] } = {
   title: "Administração",
-  items: [{ label: "Painel Admin", href: "/admin", icon: Shield }],
+  items: [
+    { label: "Painel Admin", href: "/admin", icon: Shield },
+    { label: "Assinaturas", href: "/admin/assinaturas", icon: Sparkles },
+  ],
 };
