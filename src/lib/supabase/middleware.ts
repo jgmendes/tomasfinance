@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/lib/database.types";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/config";
 
 /**
  * Renova a sessão do usuário e protege rotas privadas.
@@ -8,21 +9,9 @@ import type { Database } from "@/lib/database.types";
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  // Sem env vars configuradas (ex.: deploy sem variáveis), não derruba o site:
-  // apenas segue sem validar a sessão.
-  if (!url || !anonKey) {
-    console.error(
-      "[middleware] Variáveis NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY ausentes."
-    );
-    return supabaseResponse;
-  }
-
   const supabase = createServerClient<Database>(
-    url,
-    anonKey,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
