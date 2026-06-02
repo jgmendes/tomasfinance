@@ -8,9 +8,21 @@ import type { Database } from "@/lib/database.types";
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Sem env vars configuradas (ex.: deploy sem variáveis), não derruba o site:
+  // apenas segue sem validar a sessão.
+  if (!url || !anonKey) {
+    console.error(
+      "[middleware] Variáveis NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY ausentes."
+    );
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    anonKey,
     {
       cookies: {
         getAll() {
@@ -29,9 +41,14 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch (e) {
+    console.error("[middleware] Falha ao obter usuário:", e);
+    return supabaseResponse;
+  }
 
   const { pathname } = request.nextUrl;
 
@@ -51,16 +68,16 @@ export async function updateSession(request: NextRequest) {
 
   // Não autenticado tentando acessar rota privada -> login
   if (!user && !isAuthRoute && !isPublicAsset) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = "/login";
+    return NextResponse.redirect(redirectUrl);
   }
 
   // Autenticado tentando acessar páginas de auth -> dashboard
   if (user && isAuthRoute) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = "/dashboard";
+    return NextResponse.redirect(redirectUrl);
   }
 
   return supabaseResponse;
