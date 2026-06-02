@@ -14,7 +14,14 @@ export function formatCurrency(value: number, currency = "BRL") {
 
 export function formatDate(date: string | Date) {
   if (!date) return "—";
-  const d = typeof date === "string" ? new Date(date + "T00:00:00") : date;
+  let d: Date;
+  if (typeof date === "string") {
+    // Data simples (yyyy-mm-dd) → meia-noite local; timestamp completo → parse direto
+    d = /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(date + "T00:00:00") : new Date(date);
+  } else {
+    d = date;
+  }
+  if (isNaN(d.getTime())) return "—";
   return new Intl.DateTimeFormat("pt-BR").format(d);
 }
 
