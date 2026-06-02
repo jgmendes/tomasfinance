@@ -21,10 +21,15 @@ export default async function AppLayout({
 
   const { data } = await supabase
     .from("profiles")
-    .select("full_name, avatar_url")
+    .select("full_name, avatar_url, role")
     .eq("id", user.id)
     .single();
-  const profile = data as { full_name: string | null; avatar_url: string | null } | null;
+  const profile = data as {
+    full_name: string | null;
+    avatar_url: string | null;
+    role: string | null;
+  } | null;
+  const isAdmin = profile?.role === "admin";
 
   return (
     <ConfirmProvider>
@@ -39,7 +44,7 @@ export default async function AppLayout({
             <Logo />
           </Link>
           <div className="flex-1 overflow-y-auto">
-            <SidebarNav />
+            <SidebarNav isAdmin={isAdmin} />
           </div>
         </aside>
 
@@ -49,6 +54,7 @@ export default async function AppLayout({
             email={user.email ?? ""}
             fullName={profile?.full_name ?? null}
             avatarUrl={profile?.avatar_url ?? null}
+            isAdmin={isAdmin}
           />
           {/* única área rolável; padding-bottom no mobile por causa da nav inferior */}
           <main className="flex-1 overflow-y-auto p-4 pb-24 lg:p-6 lg:pb-6">

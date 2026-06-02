@@ -2,15 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { navGroups } from "./nav-items";
+import { navGroups, adminGroup } from "./nav-items";
 import { cn } from "@/lib/utils";
 
-export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
+export function SidebarNav({
+  onNavigate,
+  isAdmin = false,
+}: {
+  onNavigate?: () => void;
+  isAdmin?: boolean;
+}) {
   const pathname = usePathname();
+  const groups = isAdmin ? [...navGroups, adminGroup] : navGroups;
 
   return (
     <nav className="flex flex-col gap-4 px-3 py-4">
-      {navGroups.map((group) => (
+      {groups.map((group) => (
         <div key={group.title}>
           <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {group.title}

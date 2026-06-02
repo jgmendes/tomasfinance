@@ -24,6 +24,8 @@ export type InvestmentType =
   | "outros";
 export type GoalStatus = "em_andamento" | "concluida" | "pausada";
 export type SubscriptionCycle = "mensal" | "anual" | "trimestral" | "semanal";
+export type UserRole = "user" | "admin";
+export type KycStatus = "nao_enviado" | "pendente" | "aprovado" | "rejeitado";
 
 type Timestamps = { created_at: string; updated_at: string | null };
 
@@ -33,6 +35,36 @@ export type Profile = Timestamps & {
   avatar_url: string | null;
   phone: string | null;
   currency: string | null;
+  role: UserRole;
+  email: string | null;
+};
+
+export type Kyc = Timestamps & {
+  id: string;
+  user_id: string;
+  full_name: string | null;
+  cpf: string | null;
+  birth_date: string | null;
+  phone: string | null;
+  cep: string | null;
+  street: string | null;
+  number: string | null;
+  complement: string | null;
+  neighborhood: string | null;
+  city: string | null;
+  state: string | null;
+  occupation: string | null;
+  monthly_income: number | null;
+  document_type: string | null;
+  document_number: string | null;
+  document_front_url: string | null;
+  document_back_url: string | null;
+  selfie_url: string | null;
+  status: KycStatus;
+  rejection_reason: string | null;
+  submitted_at: string | null;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
 };
 
 export type Company = Timestamps & {
@@ -203,6 +235,7 @@ export type Database = {
       subscriptions: TableDef<Subscription>;
       reports: TableDef<Report>;
       notifications: TableDef<Notification>;
+      kyc: TableDef<Kyc>;
     };
     Views: Record<string, never>;
     Functions: {

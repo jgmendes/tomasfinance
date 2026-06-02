@@ -25,9 +25,10 @@ interface TopbarProps {
   email: string;
   fullName: string | null;
   avatarUrl: string | null;
+  isAdmin?: boolean;
 }
 
-export function Topbar({ email, fullName, avatarUrl }: TopbarProps) {
+export function Topbar({ email, fullName, avatarUrl, isAdmin = false }: TopbarProps) {
   const router = useRouter();
   const supabase = createClient();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -60,7 +61,7 @@ export function Topbar({ email, fullName, avatarUrl }: TopbarProps) {
               <Logo className="text-[15px]" />
             </div>
             <div>
-              <SidebarNav onNavigate={() => setMobileOpen(false)} />
+              <SidebarNav isAdmin={isAdmin} onNavigate={() => setMobileOpen(false)} />
             </div>
           </DialogContent>
         </Dialog>

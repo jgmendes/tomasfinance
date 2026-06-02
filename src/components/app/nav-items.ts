@@ -13,6 +13,8 @@ import {
   FileText,
   Bot,
   Settings,
+  ShieldCheck,
+  Shield,
   type LucideIcon,
 } from "lucide-react";
 
@@ -59,6 +61,15 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
   },
   {
     title: "Conta",
-    items: [{ label: "Configurações", href: "/configuracoes", icon: Settings }],
+    items: [
+      { label: "Verificação (KYC)", href: "/kyc", icon: ShieldCheck },
+      { label: "Configurações", href: "/configuracoes", icon: Settings },
+    ],
   },
 ];
+
+/** Grupo exibido apenas para administradores. */
+export const adminGroup: { title: string; items: NavItem[] } = {
+  title: "Administração",
+  items: [{ label: "Painel Admin", href: "/admin", icon: Shield }],
+};
