@@ -13,7 +13,7 @@ Construído com **Next.js 14 (App Router) · TypeScript · Tailwind CSS · Shadc
 - **Cartões de crédito**: limite, utilização, melhor dia de compra, fechamento e vencimento.
 - **Metas financeiras**: valor da meta, acumulado e percentual concluído.
 - **Centro de investimentos**: CDB, Tesouro, Ações, FIIs, Cripto — investido x atual x rentabilidade.
-- **Empresas**: múltiplas empresas (Bravive, MSenhas, Agenda Já, Copywave…) com fluxo próprio.
+- **Empresas**: múltiplas empresas, cada uma com seu próprio fluxo de caixa.
 - **Funcionários**: cargo, salário, comissão e dia de pagamento.
 - **Assinaturas recorrentes**: OpenAI, Claude, Vercel, AWS… com custo mensal e projeção anual.
 - **Relatórios**: DRE simplificado, demonstrativos e exportação **CSV / Excel / PDF (impressão)**.

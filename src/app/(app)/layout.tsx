@@ -21,15 +21,28 @@ export default async function AppLayout({
 
   const { data } = await supabase
     .from("profiles")
-    .select("full_name, avatar_url, role")
+    .select("full_name, avatar_url, role, mfa_enabled")
     .eq("id", user.id)
     .single();
   const profile = data as {
     full_name: string | null;
     avatar_url: string | null;
     role: string | null;
+    mfa_enabled: boolean | null;
   } | null;
   const isAdmin = profile?.role === "admin";
+
+  // 2FA obrigatório: se o usuário tem 2FA ativo e a sessão ainda não está
+  // em aal2 (não passou pelo desafio neste login), exige a verificação.
+  if (profile?.mfa_enabled) {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const aal = decodeAal(session?.access_token);
+    if (aal && aal !== "aal2") {
+      redirect("/verificar-2fa");
+    }
+  }
 
   return (
     <ConfirmProvider>
@@ -67,4 +80,16 @@ export default async function AppLayout({
       </div>
     </ConfirmProvider>
   );
+}
+
+/** Lê o claim `aal` do JWT da sessão (sem chamada de rede). */
+function decodeAal(token?: string): string | null {
+  if (!token) return null;
+  try {
+    const payload = token.split(".")[1];
+    const json = Buffer.from(payload, "base64").toString("utf8");
+    return JSON.parse(json).aal ?? null;
+  } catch {
+    return null;
+  }
 }

@@ -26,6 +26,7 @@ export type GoalStatus = "em_andamento" | "concluida" | "pausada";
 export type SubscriptionCycle = "mensal" | "anual" | "trimestral" | "semanal";
 export type UserRole = "user" | "admin";
 export type KycStatus = "nao_enviado" | "pendente" | "aprovado" | "rejeitado";
+export type TransactionScope = "pessoal" | "empresarial";
 
 type Timestamps = { created_at: string; updated_at: string | null };
 
@@ -37,6 +38,7 @@ export type Profile = Timestamps & {
   currency: string | null;
   role: UserRole;
   email: string | null;
+  mfa_enabled: boolean;
 };
 
 export type Kyc = Timestamps & {
@@ -127,6 +129,26 @@ export type Transaction = Timestamps & {
   payment_method: string | null;
   notes: string | null;
   is_recurring: boolean;
+  scope: TransactionScope;
+};
+
+export type VaultMeta = Timestamps & {
+  user_id: string;
+  salt: string;
+  verifier_iv: string;
+  verifier_ct: string;
+};
+
+export type VaultItem = Timestamps & {
+  id: string;
+  user_id: string;
+  title: string;
+  username: string | null;
+  url: string | null;
+  category: string | null;
+  notes: string | null;
+  password_iv: string;
+  password_ct: string;
 };
 
 export type Installment = {
@@ -236,6 +258,8 @@ export type Database = {
       reports: TableDef<Report>;
       notifications: TableDef<Notification>;
       kyc: TableDef<Kyc>;
+      vault_meta: TableDef<VaultMeta>;
+      vault_items: TableDef<VaultItem>;
     };
     Views: Record<string, never>;
     Functions: {

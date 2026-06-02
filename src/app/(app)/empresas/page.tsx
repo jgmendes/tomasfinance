@@ -9,14 +9,14 @@ export default function EmpresasPage() {
   return (
     <CrudModule<Company>
       title="Empresas"
-      description="Gerencie suas empresas (Bravive, MSenhas, Agenda Já, Copywave...)"
+      description="Cadastre e gerencie suas empresas e o fluxo de cada uma"
       table="companies"
       icon={Building2}
       newLabel="Nova empresa"
       orderBy="name"
       ascending
       fields={[
-        { name: "name", label: "Nome", required: true, span2: true, placeholder: "Ex: Bravive" },
+        { name: "name", label: "Nome", required: true, span2: true, placeholder: "Ex: Minha Empresa LTDA" },
         { name: "cnpj", label: "CNPJ", placeholder: "00.000.000/0001-00" },
         { name: "color", label: "Cor", placeholder: "#7c3aed" },
         { name: "description", label: "Descrição", type: "textarea", span2: true },

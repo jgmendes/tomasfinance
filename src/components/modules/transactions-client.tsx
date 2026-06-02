@@ -34,6 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { useConfirm } from "@/components/app/confirm-provider";
@@ -48,6 +49,7 @@ import type {
   Transaction,
   TransactionStatus,
   TransactionType,
+  TransactionScope,
 } from "@/lib/database.types";
 
 const STATUS_OPTIONS: { value: TransactionStatus; label: string }[] = [
@@ -75,6 +77,7 @@ const emptyForm = {
   status: "pago" as TransactionStatus,
   payment_method: "",
   notes: "",
+  scope: "pessoal" as TransactionScope,
 };
 
 export function TransactionsClient({ type }: Props) {
@@ -85,6 +88,7 @@ export function TransactionsClient({ type }: Props) {
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterScope, setFilterScope] = useState<"all" | TransactionScope>("all");
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -127,9 +131,10 @@ export function TransactionsClient({ type }: Props) {
         return false;
       if (filterCategory !== "all" && t.category_id !== filterCategory) return false;
       if (filterStatus !== "all" && t.status !== filterStatus) return false;
+      if (filterScope !== "all" && (t.scope ?? "pessoal") !== filterScope) return false;
       return true;
     });
-  }, [items, search, filterCategory, filterStatus]);
+  }, [items, search, filterCategory, filterStatus, filterScope]);
 
   const hasFilters = search !== "" || filterCategory !== "all" || filterStatus !== "all";
   function clearFilters() {
@@ -161,6 +166,7 @@ export function TransactionsClient({ type }: Props) {
       status: t.status,
       payment_method: t.payment_method ?? "",
       notes: t.notes ?? "",
+      scope: t.scope ?? "pessoal",
     });
     setOpen(true);
   }
@@ -198,6 +204,7 @@ export function TransactionsClient({ type }: Props) {
       status: form.status,
       payment_method: form.payment_method || null,
       notes: form.notes || null,
+      scope: form.scope,
     };
 
     const res = form.id
@@ -385,6 +392,21 @@ export function TransactionsClient({ type }: Props) {
                 </div>
               </div>
               <div className="grid gap-2">
+                <Label>Tipo de movimentação</Label>
+                <Select
+                  value={form.scope}
+                  onValueChange={(v) => setForm({ ...form, scope: v as TransactionScope })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pessoal">Pessoal</SelectItem>
+                    <SelectItem value="empresarial">Empresarial</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
                 <Label>Observações</Label>
                 <Textarea
                   value={form.notes}
@@ -402,6 +424,18 @@ export function TransactionsClient({ type }: Props) {
           </DialogContent>
         </Dialog>
       </PageHeader>
+
+      <Tabs
+        value={filterScope}
+        onValueChange={(v) => setFilterScope(v as "all" | TransactionScope)}
+        className="mb-4"
+      >
+        <TabsList>
+          <TabsTrigger value="all">Todas</TabsTrigger>
+          <TabsTrigger value="pessoal">Pessoal</TabsTrigger>
+          <TabsTrigger value="empresarial">Empresarial</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
         <StatCard
@@ -499,7 +533,14 @@ export function TransactionsClient({ type }: Props) {
               <TableBody>
                 {filtered.map((t) => (
                   <TableRow key={t.id}>
-                    <TableCell className="font-medium">{t.description}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {t.description}
+                        <Badge variant="outline" className="hidden text-[10px] capitalize sm:inline-flex">
+                          {t.scope ?? "pessoal"}
+                        </Badge>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-muted-foreground">
                       {catNames[t.category_id ?? ""] ?? "—"}
                     </TableCell>

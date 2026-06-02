@@ -16,7 +16,7 @@ const features = [
   { icon: Bot, title: "CFO Virtual com IA", desc: "Insights diários, previsões de caixa e cálculo de runway." },
   { icon: CreditCard, title: "Cartões & Contas", desc: "Múltiplas contas, cartões, limites e parcelamentos." },
   { icon: PiggyBank, title: "Metas & Investimentos", desc: "Acompanhe metas e a rentabilidade da sua carteira." },
-  { icon: TrendingUp, title: "Multi-empresas", desc: "Gerencie Bravive, MSenhas, Agenda Já, Copywave e mais." },
+  { icon: TrendingUp, title: "Multi-empresas", desc: "Gerencie várias empresas, cada uma com seu próprio fluxo de caixa." },
   { icon: ShieldCheck, title: "Seguro por padrão", desc: "RLS no Supabase: seus dados isolados e protegidos." },
 ];
 

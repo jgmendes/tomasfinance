@@ -26,6 +26,13 @@ export default function LoginPage() {
         toast.error("Não foi possível entrar", { description: error.message });
         return;
       }
+      // Se o usuário tem 2FA, exige o desafio antes de entrar
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (aal?.currentLevel === "aal1" && aal?.nextLevel === "aal2") {
+        router.push("/verificar-2fa");
+        router.refresh();
+        return;
+      }
       toast.success("Bem-vindo de volta!");
       router.push("/dashboard");
       router.refresh();

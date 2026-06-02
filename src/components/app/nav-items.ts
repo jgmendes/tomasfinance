@@ -15,6 +15,7 @@ import {
   Settings,
   ShieldCheck,
   Shield,
+  KeyRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -62,6 +63,7 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
   {
     title: "Conta",
     items: [
+      { label: "Cofre de Senhas", href: "/cofre", icon: KeyRound },
       { label: "Verificação (KYC)", href: "/kyc", icon: ShieldCheck },
       { label: "Configurações", href: "/configuracoes", icon: Settings },
     ],

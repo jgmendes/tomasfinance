@@ -86,10 +86,14 @@ export function MfaSetup() {
       challengeId: challenge.id,
       code,
     });
-    setBusy(false);
     if (error) {
+      setBusy(false);
       return toast.error("Código inválido", { description: error.message });
     }
+    // Marca o perfil como 2FA ativo (usado para exigir o 2FA no login)
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) await supabase.from("profiles").update({ mfa_enabled: true }).eq("id", user.id);
+    setBusy(false);
     toast.success("2FA ativado com sucesso! 🔒");
     setEnroll(null);
     setCode("");
@@ -106,6 +110,8 @@ export function MfaSetup() {
     if (!ok) return;
     const { error } = await supabase.auth.mfa.unenroll({ factorId: activeFactorId });
     if (error) return toast.error("Erro", { description: error.message });
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) await supabase.from("profiles").update({ mfa_enabled: false }).eq("id", user.id);
     toast.success("2FA desativado.");
     refresh();
   }

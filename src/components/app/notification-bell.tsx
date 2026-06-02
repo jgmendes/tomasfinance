@@ -28,8 +28,16 @@ export function NotificationBell() {
   const [items, setItems] = useState<Notification[]>([]);
 
   const load = useCallback(async () => {
-    // Gera/atualiza alertas com base nos dados financeiros
-    await fetch("/api/notifications/generate", { method: "POST" }).catch(() => {});
+    // Gera alertas no máximo a cada 5 min (evita custo a cada navegação)
+    try {
+      const last = Number(localStorage.getItem("tf_notif_gen") || 0);
+      if (Date.now() - last > 5 * 60 * 1000) {
+        localStorage.setItem("tf_notif_gen", String(Date.now()));
+        await fetch("/api/notifications/generate", { method: "POST" }).catch(() => {});
+      }
+    } catch {
+      // ignora
+    }
     const { data } = await supabase
       .from("notifications")
       .select("*")
