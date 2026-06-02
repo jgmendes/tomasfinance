@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm -v)",
+      "Bash(npm install *)",
+      "Bash(npx next *)",
+      "Bash(xargs grep -l \"GenericSchema\")",
+      "Bash(grep -rn \"GenericSchema\\\\b\" node_modules/@supabase/postgrest-js/dist/cjs/types.d.ts)",
+      "Bash(sed -n '1,80p' node_modules/@supabase/postgrest-js/dist/cjs/types.d.ts)",
+      "Bash(sed -n '2050,2075p' node_modules/@supabase/postgrest-js/dist/index.d.cts)",
+      "Bash(sed -n '3355,3380p' node_modules/@supabase/postgrest-js/dist/index.d.cts)",
+      "Bash(grep -n \"Relation\\\\$1\\\\['Insert'\\\\]\\\\|Relation\\\\$1\\\\['Update'\\\\]\\\\|\\\\['Insert'\\\\]\\\\|\\\\['Update'\\\\]\" node_modules/@supabase/postgrest-js/dist/index.d.cts)",
+      "Bash(rm -f scratchtest.ts)",
+      "Bash(rm -rf .next)",
+      "Bash(node -e \"console.log\\('ssr', require\\('@supabase/ssr/package.json'\\).version\\); console.log\\('supabase-js', require\\('@supabase/supabase-js/package.json'\\).version\\); console.log\\('postgrest', require\\('@supabase/postgrest-js/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\('ssr', require\\('@supabase/ssr/package.json'\\).version\\); console.log\\('supabase-js', require\\('@supabase/supabase-js/package.json'\\).version\\)\")",
+      "Bash(node -e \"console.log\\('next', require\\('next/package.json'\\).version\\)\")"
+    ]
+  }
+}
