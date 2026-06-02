@@ -20,15 +20,22 @@ export default function LoginPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      toast.error("Não foi possível entrar", { description: error.message });
-      return;
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        toast.error("Não foi possível entrar", { description: error.message });
+        return;
+      }
+      toast.success("Bem-vindo de volta!");
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err) {
+      toast.error("Erro ao entrar", {
+        description: err instanceof Error ? err.message : "Tente novamente.",
+      });
+    } finally {
+      setLoading(false);
     }
-    toast.success("Bem-vindo de volta!");
-    router.push("/dashboard");
-    router.refresh();
   }
 
   return (
