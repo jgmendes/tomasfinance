@@ -134,12 +134,15 @@ export type Transaction = Timestamps & {
   scope: TransactionScope;
 };
 
+export type BillingCycle = "mensal" | "anual";
+
 export type Plan = {
   id: string;
   code: string;
   name: string;
   description: string | null;
   price_cents: number;
+  price_annual_cents: number;
   features: string[] | null;
   active: boolean;
   sort: number;
@@ -152,6 +155,7 @@ export type BillingSubscription = Timestamps & {
   plan_id: string | null;
   status: BillingStatus;
   billing_enabled: boolean;
+  cycle: BillingCycle;
   current_period_end: string | null;
   next_charge_date: string | null;
 };
@@ -164,12 +168,20 @@ export type Charge = {
   amount_cents: number;
   method: string;
   status: ChargeStatus;
+  cycle: BillingCycle;
   bravive_id: string | null;
   pix_code: string | null;
   pix_qrcode: string | null;
   description: string | null;
   paid_at: string | null;
   created_at: string;
+};
+
+export type TeamMember = {
+  user_id: string;
+  email: string | null;
+  full_name: string | null;
+  is_owner: boolean;
 };
 
 export type VaultMeta = Timestamps & {
@@ -309,6 +321,18 @@ export type Database = {
       seed_default_categories: {
         Args: { p_user_id: string };
         Returns: undefined;
+      };
+      add_workspace_member: {
+        Args: { p_email: string };
+        Returns: undefined;
+      };
+      remove_workspace_member: {
+        Args: { p_member_id: string };
+        Returns: undefined;
+      };
+      list_my_team: {
+        Args: Record<string, never>;
+        Returns: TeamMember[];
       };
     };
     Enums: Record<string, never>;

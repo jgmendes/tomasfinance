@@ -75,8 +75,5 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
 /** Grupo exibido apenas para administradores. */
 export const adminGroup: { title: string; items: NavItem[] } = {
   title: "Administração",
-  items: [
-    { label: "Painel Admin", href: "/admin", icon: Shield },
-    { label: "Assinaturas", href: "/admin/assinaturas", icon: Sparkles },
-  ],
+  items: [{ label: "Abrir Painel Admin", href: "/admin", icon: Shield }],
 };
