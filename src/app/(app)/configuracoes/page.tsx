@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
@@ -11,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Upload, Sparkles, Wallet, KeyRound, ShieldCheck } from "lucide-react";
 import { MfaSetup } from "@/components/modules/mfa-setup";
 import { NotificationSettings } from "@/components/modules/notification-settings";
 import type { Profile } from "@/lib/database.types";
@@ -110,9 +111,34 @@ export default function ConfiguracoesPage() {
 
   const initials = (fullName || email).slice(0, 2).toUpperCase();
 
+  const shortcuts = [
+    { href: "/plano", label: "Meu Plano", icon: Sparkles, desc: "Assinatura e pagamento" },
+    { href: "/contas", label: "Contas", icon: Wallet, desc: "Bancos e carteiras" },
+    { href: "/cofre", label: "Cofre de Senhas", icon: KeyRound, desc: "Senhas criptografadas" },
+    { href: "/kyc", label: "Verificação (KYC)", icon: ShieldCheck, desc: "Identidade" },
+  ];
+
   return (
     <div className="max-w-2xl">
-      <PageHeader title="Configurações" description="Gerencie seu perfil e conta" />
+      <PageHeader title="Minha Conta" description="Tudo da sua conta em um só lugar" />
+
+      <div className="mb-6 grid gap-3 sm:grid-cols-2">
+        {shortcuts.map((s) => (
+          <Link key={s.href} href={s.href}>
+            <Card className="transition-colors hover:border-primary">
+              <CardContent className="flex items-center gap-3 p-4">
+                <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10">
+                  <s.icon className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium">{s.label}</p>
+                  <p className="text-xs text-muted-foreground">{s.desc}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
 
       <Card className="mb-6">
         <CardHeader>

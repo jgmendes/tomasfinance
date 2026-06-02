@@ -5,12 +5,6 @@ import type { BillingSubscription, Plan } from "@/lib/database.types";
 
 export const dynamic = "force-dynamic";
 
-function addMonthISO(months = 1): string {
-  const d = new Date();
-  d.setMonth(d.getMonth() + months);
-  return d.toISOString().slice(0, 10);
-}
-
 export async function POST(request: Request) {
   const supabase = await createClient();
   const {
@@ -20,14 +14,17 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => ({}));
   const planId: string = body.planId;
+  const cycle: "mensal" | "anual" = body.cycle === "anual" ? "anual" : "mensal";
   if (!planId) return NextResponse.json({ error: "planId obrigatório" }, { status: 400 });
 
   const { data: planData } = await supabase.from("plans").select("*").eq("id", planId).single();
   const plan = planData as Plan | null;
   if (!plan) return NextResponse.json({ error: "Plano inválido" }, { status: 404 });
 
+  const amount = cycle === "anual" ? plan.price_annual_cents : plan.price_cents;
+
   // Garante que existe assinatura para o usuário
-  let { data: subData } = await supabase
+  const { data: subData } = await supabase
     .from("billing_subscriptions")
     .select("*")
     .eq("user_id", user.id)
@@ -37,31 +34,21 @@ export async function POST(request: Request) {
   if (!sub) {
     const { data: created } = await supabase
       .from("billing_subscriptions")
-      .insert({ user_id: user.id, plan_id: planId, status: "trial", billing_enabled: true })
+      .insert({ user_id: user.id, plan_id: planId, status: "trial", billing_enabled: true, cycle })
       .select("*")
       .single();
     sub = created as BillingSubscription;
   } else {
-    await supabase.from("billing_subscriptions").update({ plan_id: planId }).eq("id", sub.id);
+    await supabase.from("billing_subscriptions").update({ plan_id: planId, cycle }).eq("id", sub.id);
   }
 
-  // Plano gratuito: ativa direto, sem cobrança
-  if (plan.price_cents <= 0) {
-    await supabase
-      .from("billing_subscriptions")
-      .update({
-        plan_id: planId,
-        status: "ativa",
-        current_period_end: addMonthISO(1),
-        next_charge_date: addMonthISO(1),
-      })
-      .eq("id", sub!.id);
-    return NextResponse.json({ free: true });
+  if (amount <= 0) {
+    return NextResponse.json({ error: "Plano sem valor para cobrança." }, { status: 400 });
   }
 
   if (!isBraviveConfigured()) {
     return NextResponse.json(
-      { error: "Pagamento não configurado. Defina as variáveis BRAVIVE_* no servidor." },
+      { error: "Pagamento ainda não configurado pelo administrador. Tente novamente em breve." },
       { status: 503 }
     );
   }
@@ -70,8 +57,8 @@ export async function POST(request: Request) {
   const origin = new URL(request.url).origin;
   try {
     const pix = await createPixCharge(
-      plan.price_cents,
-      `Assinatura ${plan.name} — Tomaz Finanças`,
+      amount,
+      `Assinatura ${plan.name} (${cycle}) — Tomaz Finanças`,
       `${origin}/api/webhooks/bravive`
     );
 
@@ -79,21 +66,17 @@ export async function POST(request: Request) {
       user_id: user.id,
       subscription_id: sub!.id,
       plan_id: planId,
-      amount_cents: plan.price_cents,
+      amount_cents: amount,
       method: "pix",
       status: "pendente",
+      cycle,
       bravive_id: pix.id,
       pix_code: pix.code,
       pix_qrcode: pix.qrcode,
-      description: `Assinatura ${plan.name}`,
+      description: `Assinatura ${plan.name} (${cycle})`,
     });
 
-    return NextResponse.json({
-      free: false,
-      amount_cents: plan.price_cents,
-      code: pix.code,
-      qrcode: pix.qrcode,
-    });
+    return NextResponse.json({ free: false, amount_cents: amount, code: pix.code, qrcode: pix.qrcode });
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Erro ao gerar PIX" },

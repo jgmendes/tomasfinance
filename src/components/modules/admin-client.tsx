@@ -17,8 +17,9 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import { useConfirm } from "@/components/app/confirm-provider";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { Loader2, Users, ShieldCheck, Clock, Search, FileText } from "lucide-react";
+import { Loader2, Users, ShieldCheck, Clock, Search, FileText, LogIn } from "lucide-react";
 import type { KycStatus, Profile, Kyc } from "@/lib/database.types";
 
 const STATUS: Record<KycStatus, { label: string; variant: any }> = {
@@ -30,6 +31,7 @@ const STATUS: Record<KycStatus, { label: string; variant: any }> = {
 
 export function AdminClient() {
   const supabase = createClient();
+  const confirm = useConfirm();
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [kycs, setKycs] = useState<Kyc[]>([]);
@@ -129,6 +131,25 @@ export function AdminClient() {
     load();
   }
 
+  async function impersonate(p: Profile) {
+    if (!p.email) return toast.error("Usuário sem e-mail");
+    const ok = await confirm({
+      title: "Entrar como usuário",
+      description: `Você sairá da conta admin e entrará como ${p.email}. Continuar?`,
+      confirmText: "Entrar como",
+      destructive: false,
+    });
+    if (!ok) return;
+    const res = await fetch("/api/admin/impersonate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: p.email }),
+    });
+    const data = await res.json();
+    if (!res.ok) return toast.error("Erro", { description: data.error });
+    window.location.href = data.url;
+  }
+
   async function toggleAdmin(p: Profile) {
     const newRole = p.role === "admin" ? "user" : "admin";
     const { error } = await supabase.from("profiles").update({ role: newRole }).eq("id", p.id);
@@ -203,6 +224,9 @@ export function AdminClient() {
                             <FileText className="h-3.5 w-3.5" /> Revisar
                           </Button>
                         )}
+                        <Button size="sm" variant="ghost" onClick={() => impersonate(p)}>
+                          <LogIn className="h-3.5 w-3.5" /> Entrar como
+                        </Button>
                         <Button size="sm" variant="ghost" onClick={() => toggleAdmin(p)}>
                           {p.role === "admin" ? "Remover admin" : "Tornar admin"}
                         </Button>

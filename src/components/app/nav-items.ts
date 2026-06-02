@@ -2,7 +2,6 @@ import {
   LayoutDashboard,
   TrendingUp,
   TrendingDown,
-  Wallet,
   CreditCard,
   Layers,
   Target,
@@ -13,10 +12,7 @@ import {
   FileText,
   Bot,
   Settings,
-  ShieldCheck,
   Shield,
-  KeyRound,
-  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -40,7 +36,6 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
     items: [
       { label: "Receitas", href: "/receitas", icon: TrendingUp },
       { label: "Despesas", href: "/despesas", icon: TrendingDown },
-      { label: "Contas", href: "/contas", icon: Wallet },
       { label: "Cartões", href: "/cartoes", icon: CreditCard },
       { label: "Parcelamentos", href: "/parcelamentos", icon: Layers },
       { label: "Assinaturas", href: "/assinaturas", icon: RefreshCw },
@@ -63,12 +58,7 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
   },
   {
     title: "Conta",
-    items: [
-      { label: "Meu Plano", href: "/plano", icon: Sparkles },
-      { label: "Cofre de Senhas", href: "/cofre", icon: KeyRound },
-      { label: "Verificação (KYC)", href: "/kyc", icon: ShieldCheck },
-      { label: "Configurações", href: "/configuracoes", icon: Settings },
-    ],
+    items: [{ label: "Minha Conta", href: "/configuracoes", icon: Settings }],
   },
 ];
 

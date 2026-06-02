@@ -51,13 +51,15 @@ export async function POST(request: Request) {
       .eq("id", charge.id);
 
     if (charge.subscription_id) {
+      const months = charge.cycle === "anual" ? 12 : 1;
       await admin
         .from("billing_subscriptions")
         .update({
           status: "ativa",
           plan_id: charge.plan_id,
-          current_period_end: addMonthISO(1),
-          next_charge_date: addMonthISO(1),
+          cycle: charge.cycle,
+          current_period_end: addMonthISO(months),
+          next_charge_date: addMonthISO(months),
         })
         .eq("id", charge.subscription_id);
     }
