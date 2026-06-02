@@ -52,6 +52,7 @@ export async function updateSession(request: NextRequest) {
     pathname === "/" ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") || // rotas de API cuidam da própria auth
+    pathname.startsWith("/admin-login") ||
     pathname === "/manifest.webmanifest" ||
     pathname === "/sw.js" ||
     pathname.startsWith("/icon-");
