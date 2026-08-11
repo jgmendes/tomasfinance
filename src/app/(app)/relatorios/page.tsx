@@ -18,9 +18,7 @@ import {
 } from "@/components/ui/table";
 import { sumByType } from "@/lib/finance";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
-import { Download, FileDown, TrendingUp, TrendingDown, PiggyBank, ShieldCheck } from "lucide-react";
+import { Download, FileDown, Loader2, TrendingUp, TrendingDown, PiggyBank, ShieldCheck } from "lucide-react";
 import type { AuditLog, Category, Transaction } from "@/lib/database.types";
 
 const AUDIT_ACTION_LABEL: Record<string, string> = {
@@ -34,13 +32,14 @@ export default function RelatoriosPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [loading, setLoading] = useState(true);
   const [start, setStart] = useState(`${new Date().getFullYear()}-01-01`);
   const [end, setEnd] = useState(new Date().toISOString().slice(0, 10));
 
+  // Categorias e auditoria só mudam de página em página; carrega uma vez.
   useEffect(() => {
     (async () => {
-      const [tx, cat, audit] = await Promise.all([
-        supabase.from("transactions").select("*").order("date", { ascending: false }),
+      const [cat, audit] = await Promise.all([
         supabase.from("categories").select("*"),
         supabase
           .from("audit_logs")
@@ -49,22 +48,36 @@ export default function RelatoriosPage() {
           .order("created_at", { ascending: false })
           .limit(30),
       ]);
-      setTransactions((tx.data ?? []) as Transaction[]);
       setCategories((cat.data ?? []) as Category[]);
       setAuditLogs((audit.data ?? []) as AuditLog[]);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Transações: busca só o período selecionado (evita trazer o histórico
+  // inteiro do usuário toda vez que a página abre ou o período muda).
+  useEffect(() => {
+    setLoading(true);
+    (async () => {
+      const { data } = await supabase
+        .from("transactions")
+        .select("*")
+        .gte("date", start)
+        .lte("date", end)
+        .order("date", { ascending: false });
+      setTransactions((data ?? []) as Transaction[]);
+      setLoading(false);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [start, end]);
+
   const catNames = useMemo(
     () => Object.fromEntries(categories.map((c) => [c.id, c.name])),
     [categories]
   );
 
-  const filtered = useMemo(
-    () => transactions.filter((t) => t.date >= start && t.date <= end),
-    [transactions, start, end]
-  );
+  // Já vem filtrado do banco pelo período; mantém o nome para o resto do arquivo.
+  const filtered = transactions;
 
   const receitas = sumByType(filtered, "receita");
   const despesas = sumByType(filtered, "despesa");
@@ -85,7 +98,13 @@ export default function RelatoriosPage() {
     };
   }, [filtered, catNames]);
 
-  function exportPDF() {
+  async function exportPDF() {
+    // jsPDF + autotable só são baixados quando o usuário realmente exporta
+    // (evitam ~140kB no carregamento inicial da página).
+    const [{ jsPDF }, { default: autoTable }] = await Promise.all([
+      import("jspdf"),
+      import("jspdf-autotable"),
+    ]);
     const doc = new jsPDF();
     doc.setFontSize(16);
     doc.setTextColor(124, 58, 237);
@@ -159,7 +178,8 @@ export default function RelatoriosPage() {
             <Label>Até</Label>
             <Input type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+            {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             {filtered.length} movimentações no período
           </p>
         </CardContent>
