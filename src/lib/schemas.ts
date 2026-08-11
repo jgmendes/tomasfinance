@@ -4,11 +4,26 @@ export const transactionSchema = z.object({
   description: z.string().trim().min(2, "Informe uma descrição (mín. 2 caracteres)."),
   amount: z.coerce.number().positive("O valor deve ser maior que zero."),
   date: z.string().min(1, "Informe a data."),
+  reason: z.string().trim().min(2, "Informe o motivo deste valor."),
+  invoice_issued: z.enum(["sim", "nao"], {
+    errorMap: () => ({ message: "Informe se foi emitida nota fiscal." }),
+  }),
+  beneficiary_id: z.string().trim().min(1, "Selecione o beneficiário."),
 });
 
 export const goalSchema = z.object({
   title: z.string().trim().min(2, "Informe um título."),
   target_amount: z.coerce.number().positive("A meta deve ser maior que zero."),
+});
+
+export const beneficiarySchema = z.object({
+  name: z.string().trim().min(2, "Informe o nome do beneficiário."),
+  document: z.string().trim().optional(),
+});
+
+export const reminderSchema = z.object({
+  title: z.string().trim().min(2, "Informe o lembrete."),
+  remind_at: z.string().min(1, "Informe a data e hora."),
 });
 
 /** Helper: valida e retorna a primeira mensagem de erro (ou null se ok). */

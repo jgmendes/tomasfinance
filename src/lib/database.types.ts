@@ -29,6 +29,7 @@ export type KycStatus = "nao_enviado" | "pendente" | "aprovado" | "rejeitado";
 export type TransactionScope = "pessoal" | "empresarial";
 export type BillingStatus = "trial" | "ativa" | "atrasada" | "cancelada";
 export type ChargeStatus = "pendente" | "pago" | "expirado" | "falhou" | "cancelado";
+export type ReminderStatus = "pendente" | "concluido" | "cancelado";
 
 type Timestamps = { created_at: string; updated_at: string | null };
 
@@ -78,6 +79,33 @@ export type Company = Timestamps & {
   cnpj: string | null;
   description: string | null;
   color: string | null;
+};
+
+export type Beneficiary = Timestamps & {
+  id: string;
+  user_id: string;
+  name: string;
+  document: string | null;
+  notes: string | null;
+};
+
+export type Reminder = Timestamps & {
+  id: string;
+  user_id: string;
+  title: string;
+  remind_at: string;
+  status: ReminderStatus;
+  notified: boolean;
+};
+
+export type AuditLog = {
+  id: string;
+  user_id: string | null;
+  action: string;
+  entity: string | null;
+  entity_id: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
 };
 
 export type Category = {
@@ -132,6 +160,10 @@ export type Transaction = Timestamps & {
   notes: string | null;
   is_recurring: boolean;
   scope: TransactionScope;
+  reason: string | null;
+  invoice_issued: boolean | null;
+  invoice_number: string | null;
+  beneficiary_id: string | null;
 };
 
 export type BillingCycle = "mensal" | "anual";
@@ -298,6 +330,9 @@ export type Database = {
     Tables: {
       profiles: TableDef<Profile>;
       companies: TableDef<Company>;
+      beneficiaries: TableDef<Beneficiary>;
+      reminders: TableDef<Reminder>;
+      audit_logs: TableDef<AuditLog>;
       categories: TableDef<Category>;
       bank_accounts: TableDef<BankAccount>;
       credit_cards: TableDef<CreditCard>;

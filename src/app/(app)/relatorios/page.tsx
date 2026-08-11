@@ -20,24 +20,38 @@ import { sumByType } from "@/lib/finance";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-import { Download, FileDown, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
-import type { Category, Transaction } from "@/lib/database.types";
+import { Download, FileDown, TrendingUp, TrendingDown, PiggyBank, ShieldCheck } from "lucide-react";
+import type { AuditLog, Category, Transaction } from "@/lib/database.types";
+
+const AUDIT_ACTION_LABEL: Record<string, string> = {
+  transaction_created: "Lançamento criado",
+  transaction_updated: "Lançamento editado",
+  transaction_deleted: "Lançamento excluído",
+};
 
 export default function RelatoriosPage() {
   const supabase = createClient();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [start, setStart] = useState(`${new Date().getFullYear()}-01-01`);
   const [end, setEnd] = useState(new Date().toISOString().slice(0, 10));
 
   useEffect(() => {
     (async () => {
-      const [tx, cat] = await Promise.all([
+      const [tx, cat, audit] = await Promise.all([
         supabase.from("transactions").select("*").order("date", { ascending: false }),
         supabase.from("categories").select("*"),
+        supabase
+          .from("audit_logs")
+          .select("*")
+          .eq("entity", "transactions")
+          .order("created_at", { ascending: false })
+          .limit(30),
       ]);
       setTransactions((tx.data ?? []) as Transaction[]);
       setCategories((cat.data ?? []) as Category[]);
+      setAuditLogs((audit.data ?? []) as AuditLog[]);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -223,6 +237,29 @@ export default function RelatoriosPage() {
               ))}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-primary" /> Trilha de auditoria
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Todo lançamento criado, editado ou excluído é registrado automaticamente pelo banco de dados — só leitura, ninguém (nem você) consegue apagar ou alterar este histórico.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {auditLogs.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Nenhum registro de auditoria ainda.</p>
+          ) : (
+            auditLogs.map((log) => (
+              <div key={log.id} className="flex items-center justify-between border-b pb-2 text-sm last:border-0">
+                <span>{AUDIT_ACTION_LABEL[log.action] ?? log.action}</span>
+                <span className="text-xs text-muted-foreground">{formatDate(log.created_at)}</span>
+              </div>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>

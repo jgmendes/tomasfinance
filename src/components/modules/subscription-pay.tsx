@@ -59,6 +59,8 @@ export function SubscriptionPay({
       company_id: sub.company_id,
       payment_method: "Assinatura",
       is_recurring: true,
+      reason: "Pagamento recorrente de assinatura",
+      invoice_issued: false,
     });
 
     if (txErr) {

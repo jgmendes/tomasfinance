@@ -8,11 +8,13 @@ import {
   LineChart,
   Building2,
   Users,
+  UserCheck,
   RefreshCw,
   FileText,
   Bot,
   Settings,
   Shield,
+  AlarmClock,
   type LucideIcon,
 } from "lucide-react";
 
@@ -29,6 +31,7 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
       { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
       { label: "Dashboard Executivo", href: "/executivo", icon: LineChart },
       { label: "CFO Virtual (IA)", href: "/cfo", icon: Bot },
+      { label: "Lembretes", href: "/lembretes", icon: AlarmClock },
     ],
   },
   {
@@ -52,6 +55,7 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
     title: "Negócios",
     items: [
       { label: "Empresas", href: "/empresas", icon: Building2 },
+      { label: "Beneficiários", href: "/beneficiarios", icon: UserCheck },
       { label: "Funcionários", href: "/funcionarios", icon: Users },
       { label: "Relatórios", href: "/relatorios", icon: FileText },
     ],

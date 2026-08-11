@@ -40,10 +40,11 @@ import { CurrencyInput } from "@/components/ui/currency-input";
 import { useConfirm } from "@/components/app/confirm-provider";
 import { formatCurrency, formatDate, currentMonthRange } from "@/lib/utils";
 import { suggestCategory } from "@/lib/categorize";
-import { transactionSchema, firstError } from "@/lib/schemas";
-import { Loader2, Plus, Trash2, TrendingUp, TrendingDown, Pencil, Search, X } from "lucide-react";
+import { transactionSchema, beneficiarySchema, firstError } from "@/lib/schemas";
+import { Loader2, Plus, Trash2, TrendingUp, TrendingDown, Pencil, Search, X, FileCheck, FileX, UserCheck } from "lucide-react";
 import type {
   BankAccount,
+  Beneficiary,
   Category,
   Company,
   Transaction,
@@ -51,6 +52,8 @@ import type {
   TransactionType,
   TransactionScope,
 } from "@/lib/database.types";
+
+const NEW_BENEFICIARY = "__new__";
 
 const STATUS_OPTIONS: { value: TransactionStatus; label: string }[] = [
   { value: "pago", label: "Pago" },
@@ -78,7 +81,13 @@ const emptyForm = {
   payment_method: "",
   notes: "",
   scope: "pessoal" as TransactionScope,
+  reason: "",
+  invoice_issued: "" as "" | "sim" | "nao",
+  invoice_number: "",
+  beneficiary_id: "",
 };
+
+const emptyBeneficiaryForm = { name: "", document: "" };
 
 export function TransactionsClient({ type }: Props) {
   const supabase = createClient();
@@ -95,23 +104,30 @@ export function TransactionsClient({ type }: Props) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
+  const [beneficiaryDialogOpen, setBeneficiaryDialogOpen] = useState(false);
+  const [beneficiaryForm, setBeneficiaryForm] = useState(emptyBeneficiaryForm);
+  const [savingBeneficiary, setSavingBeneficiary] = useState(false);
+
   const [items, setItems] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
 
   async function load() {
     setLoading(true);
-    const [tx, cat, acc, comp] = await Promise.all([
+    const [tx, cat, acc, comp, ben] = await Promise.all([
       supabase.from("transactions").select("*").eq("type", type).order("date", { ascending: false }),
       supabase.from("categories").select("*").eq("type", type).order("name"),
       supabase.from("bank_accounts").select("*").order("name"),
       supabase.from("companies").select("*").order("name"),
+      supabase.from("beneficiaries").select("*").order("name"),
     ]);
     setItems((tx.data ?? []) as Transaction[]);
     setCategories((cat.data ?? []) as Category[]);
     setAccounts((acc.data ?? []) as BankAccount[]);
     setCompanies((comp.data ?? []) as Company[]);
+    setBeneficiaries((ben.data ?? []) as Beneficiary[]);
     setLoading(false);
   }
 
@@ -123,6 +139,11 @@ export function TransactionsClient({ type }: Props) {
   const catNames = useMemo(
     () => Object.fromEntries(categories.map((c) => [c.id, c.name])),
     [categories]
+  );
+
+  const beneficiaryNames = useMemo(
+    () => Object.fromEntries(beneficiaries.map((b) => [b.id, b.name])),
+    [beneficiaries]
   );
 
   const filtered = useMemo(() => {
@@ -167,8 +188,57 @@ export function TransactionsClient({ type }: Props) {
       payment_method: t.payment_method ?? "",
       notes: t.notes ?? "",
       scope: t.scope ?? "pessoal",
+      reason: t.reason ?? "",
+      invoice_issued: t.invoice_issued == null ? "" : t.invoice_issued ? "sim" : "nao",
+      invoice_number: t.invoice_number ?? "",
+      beneficiary_id: t.beneficiary_id ?? "",
     });
     setOpen(true);
+  }
+
+  function onBeneficiarySelect(v: string) {
+    if (v === NEW_BENEFICIARY) {
+      setBeneficiaryForm(emptyBeneficiaryForm);
+      setBeneficiaryDialogOpen(true);
+      return;
+    }
+    setForm({ ...form, beneficiary_id: v });
+  }
+
+  async function saveBeneficiary(e: React.FormEvent) {
+    e.preventDefault();
+    const validationError = firstError(beneficiarySchema, beneficiaryForm);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+    setSavingBeneficiary(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Sessão expirada");
+      setSavingBeneficiary(false);
+      return;
+    }
+    const { data, error } = await supabase
+      .from("beneficiaries")
+      .insert({
+        user_id: user.id,
+        name: beneficiaryForm.name.trim(),
+        document: beneficiaryForm.document.trim() || null,
+      })
+      .select()
+      .single();
+    setSavingBeneficiary(false);
+    if (error || !data) {
+      toast.error("Erro ao cadastrar beneficiário", { description: error?.message });
+      return;
+    }
+    setBeneficiaries((prev) => [...prev, data as Beneficiary].sort((a, b) => a.name.localeCompare(b.name)));
+    setForm((prev) => ({ ...prev, beneficiary_id: data.id }));
+    setBeneficiaryDialogOpen(false);
+    toast.success("Beneficiário cadastrado!");
   }
 
   async function save(e: React.FormEvent) {
@@ -177,6 +247,9 @@ export function TransactionsClient({ type }: Props) {
       description: form.description,
       amount: form.amount,
       date: form.date,
+      reason: form.reason,
+      invoice_issued: form.invoice_issued,
+      beneficiary_id: form.beneficiary_id,
     });
     if (validationError) {
       toast.error(validationError);
@@ -205,6 +278,10 @@ export function TransactionsClient({ type }: Props) {
       payment_method: form.payment_method || null,
       notes: form.notes || null,
       scope: form.scope,
+      reason: form.reason.trim(),
+      invoice_issued: form.invoice_issued === "sim",
+      invoice_number: form.invoice_issued === "sim" ? form.invoice_number.trim() || null : null,
+      beneficiary_id: form.beneficiary_id,
     };
 
     const res = form.id
@@ -407,6 +484,58 @@ export function TransactionsClient({ type }: Props) {
                 </Select>
               </div>
               <div className="grid gap-2">
+                <Label>Motivo deste valor</Label>
+                <Textarea
+                  value={form.reason}
+                  onChange={(e) => setForm({ ...form, reason: e.target.value })}
+                  placeholder="Explique o motivo deste valor (obrigatório para o histórico financeiro/fiscal)"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label>Beneficiário</Label>
+                  <Select value={form.beneficiary_id} onValueChange={onBeneficiarySelect}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Quem recebeu/originou o valor" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {beneficiaries.map((b) => (
+                        <SelectItem key={b.id} value={b.id}>
+                          {b.name}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value={NEW_BENEFICIARY}>+ Novo beneficiário</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Emitiu nota fiscal?</Label>
+                  <Select
+                    value={form.invoice_issued}
+                    onValueChange={(v) => setForm({ ...form, invoice_issued: v as "sim" | "nao" })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sim">Sim</SelectItem>
+                      <SelectItem value="nao">Não</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              {form.invoice_issued === "sim" && (
+                <div className="grid gap-2">
+                  <Label>Número da nota fiscal</Label>
+                  <Input
+                    value={form.invoice_number}
+                    onChange={(e) => setForm({ ...form, invoice_number: e.target.value })}
+                    placeholder="Opcional"
+                  />
+                </div>
+              )}
+              <div className="grid gap-2">
                 <Label>Observações</Label>
                 <Textarea
                   value={form.notes}
@@ -418,6 +547,39 @@ export function TransactionsClient({ type }: Props) {
                 <Button type="submit" disabled={saving}>
                   {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                   Salvar
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={beneficiaryDialogOpen} onOpenChange={setBeneficiaryDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Novo beneficiário</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={saveBeneficiary} className="space-y-4">
+              <div className="grid gap-2">
+                <Label>Nome</Label>
+                <Input
+                  value={beneficiaryForm.name}
+                  onChange={(e) => setBeneficiaryForm({ ...beneficiaryForm, name: e.target.value })}
+                  placeholder="Ex: João da Silva ou Fornecedor LTDA"
+                  required
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>CPF/CNPJ</Label>
+                <Input
+                  value={beneficiaryForm.document}
+                  onChange={(e) => setBeneficiaryForm({ ...beneficiaryForm, document: e.target.value })}
+                  placeholder="Opcional"
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit" disabled={savingBeneficiary}>
+                  {savingBeneficiary && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Salvar beneficiário
                 </Button>
               </DialogFooter>
             </form>
@@ -524,6 +686,7 @@ export function TransactionsClient({ type }: Props) {
                 <TableRow>
                   <TableHead>Descrição</TableHead>
                   <TableHead>Categoria</TableHead>
+                  <TableHead>Beneficiário</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Valor</TableHead>
@@ -534,7 +697,7 @@ export function TransactionsClient({ type }: Props) {
                 {filtered.map((t) => (
                   <TableRow key={t.id}>
                     <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2" title={t.reason ?? undefined}>
                         {t.description}
                         <Badge variant="outline" className="hidden text-[10px] capitalize sm:inline-flex">
                           {t.scope ?? "pessoal"}
@@ -543,6 +706,19 @@ export function TransactionsClient({ type }: Props) {
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {catNames[t.category_id ?? ""] ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      <div className="flex items-center gap-1.5">
+                        <UserCheck className="h-3.5 w-3.5 shrink-0" />
+                        <span className="truncate max-w-[120px]">
+                          {beneficiaryNames[t.beneficiary_id ?? ""] ?? "—"}
+                        </span>
+                        {t.invoice_issued ? (
+                          <FileCheck className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                        ) : (
+                          <FileX className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {formatDate(t.date)}

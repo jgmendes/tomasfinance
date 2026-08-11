@@ -7,6 +7,7 @@ import { MobileNav } from "@/components/app/mobile-nav";
 import { ConfirmProvider } from "@/components/app/confirm-provider";
 import { Logo } from "@/components/app/logo";
 import { TrialGate } from "@/components/app/trial-gate";
+import { ReminderWatcher } from "@/components/app/reminder-watcher";
 import type { BillingSubscription } from "@/lib/database.types";
 
 export default async function AppLayout({
@@ -103,6 +104,7 @@ export default async function AppLayout({
 
         {/* Navegação inferior (somente mobile) */}
         <MobileNav />
+        <ReminderWatcher />
       </div>
     </ConfirmProvider>
   );
