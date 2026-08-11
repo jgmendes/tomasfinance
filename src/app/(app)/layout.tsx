@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { SidebarNav } from "@/components/app/sidebar";
 import { Topbar } from "@/components/app/topbar";
@@ -9,6 +10,9 @@ import { Logo } from "@/components/app/logo";
 import { TrialGate } from "@/components/app/trial-gate";
 import { ReminderWatcher } from "@/components/app/reminder-watcher";
 import type { BillingSubscription } from "@/lib/database.types";
+
+// Área logada: nunca deve ser indexada por buscadores.
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function AppLayout({
   children,
