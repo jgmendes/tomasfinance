@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Tomaz Finanças",
-    short_name: "Tomaz",
+    name: "Tomas Finance",
+    short_name: "Tomas",
     description: "Sistema financeiro completo com CFO Virtual e IA.",
     start_url: "/dashboard",
     display: "standalone",

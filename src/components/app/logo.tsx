@@ -37,7 +37,7 @@ export function Logo({
   return (
     <span className={cn("flex items-center gap-2 font-bold", className)}>
       <LogoMark className="h-8 w-8" />
-      {showText && <span>Tomaz Finanças</span>}
+      {showText && <span>Tomas Finance</span>}
     </span>
   );
 }

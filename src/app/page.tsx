@@ -174,46 +174,46 @@ export default async function Home() {
 
           {/* Mockup visual do produto */}
           <div className="relative">
-            <div className="rounded-2xl border bg-card p-2 shadow-2xl shadow-primary/10 sm:p-3">
-              <div className="flex items-center gap-1.5 border-b px-3 py-2.5">
+            <div className="rounded-2xl border border-primary/20 bg-secondary p-2 shadow-2xl shadow-primary/20 sm:p-3">
+              <div className="flex items-center gap-1.5 border-b border-white/10 px-3 py-2.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
                 <span className="ml-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <LogoMark className="h-3.5 w-3.5" /> app.tomazfinancas.com/dashboard
+                  <LogoMark className="h-3.5 w-3.5" /> app.tomasfinance.com/dashboard
                 </span>
               </div>
               <div className="grid gap-3 p-4 sm:grid-cols-2">
-                <div className="rounded-xl border bg-background p-4">
+                <div className="rounded-xl border bg-card p-4 shadow-sm">
                   <Wallet className="h-4 w-4 text-primary" />
                   <p className="mt-2 text-xs text-muted-foreground">Saldo total</p>
                   <p className="text-lg font-bold">R$ 84.320</p>
                 </div>
-                <div className="rounded-xl border bg-background p-4">
+                <div className="rounded-xl border bg-card p-4 shadow-sm">
                   <TrendingUp className="h-4 w-4 text-emerald-500" />
                   <p className="mt-2 text-xs text-muted-foreground">Receitas do mês</p>
                   <p className="text-lg font-bold text-emerald-500">R$ 32.150</p>
                 </div>
-                <div className="rounded-xl border bg-background p-4">
+                <div className="rounded-xl border bg-card p-4 shadow-sm">
                   <TrendingDown className="h-4 w-4 text-red-500" />
                   <p className="mt-2 text-xs text-muted-foreground">Despesas do mês</p>
                   <p className="text-lg font-bold text-red-500">R$ 18.940</p>
                 </div>
-                <div className="rounded-xl border bg-background p-4">
+                <div className="rounded-xl border bg-card p-4 shadow-sm">
                   <Gem className="h-4 w-4 text-primary" />
                   <p className="mt-2 text-xs text-muted-foreground">Patrimônio</p>
                   <p className="text-lg font-bold">R$ 212.780</p>
                 </div>
-                <div className="flex items-end gap-1.5 rounded-xl border bg-background p-4 sm:col-span-2">
+                <div className="flex items-end gap-1.5 rounded-xl border bg-card p-4 shadow-sm sm:col-span-2">
                   {[38, 52, 44, 61, 49, 70, 58, 76, 64, 82, 71, 90].map((h, i) => (
-                    <div key={i} className="flex-1 rounded-t-sm bg-gradient-to-t from-primary/40 to-primary" style={{ height: `${h}px` }} />
+                    <div key={i} className="flex-1 rounded-t-sm bg-gradient-to-t from-primary/50 to-primary" style={{ height: `${h}px` }} />
                   ))}
                 </div>
               </div>
             </div>
 
             {/* Chip flutuante */}
-            <div className="absolute -bottom-5 -left-5 hidden items-center gap-2 rounded-xl border bg-card px-4 py-3 shadow-xl sm:flex">
+            <div className="absolute -bottom-5 -left-5 hidden items-center gap-2 rounded-xl border border-primary/20 bg-card px-4 py-3 shadow-xl sm:flex">
               <div className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-500/10">
                 <FileCheck className="h-4 w-4 text-emerald-500" />
               </div>
@@ -384,7 +384,7 @@ export default async function Home() {
         <div className="container flex flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
           <Logo className="text-sm" />
           <span className="text-center">
-            © {new Date().getFullYear()} Tomaz Finanças · CNPJ 682487171000190
+            © {new Date().getFullYear()} Tomas Finance · CNPJ 682487171000190
           </span>
         </div>
       </footer>

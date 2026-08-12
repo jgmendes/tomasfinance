@@ -12,13 +12,13 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
-const TITLE = "Tomaz Finanças — Seu CFO Virtual";
+const TITLE = "Tomas Finance — Seu CFO Virtual";
 const DESCRIPTION =
   "Sistema financeiro completo: receitas, despesas, contas, cartões, metas, investimentos, empresas e inteligência financeira com IA.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: TITLE, template: "%s · Tomaz Finanças" },
+  title: { default: TITLE, template: "%s · Tomas Finance" },
   description: DESCRIPTION,
   keywords: [
     "controle financeiro",
@@ -34,11 +34,11 @@ export const metadata: Metadata = {
     icon: "/icon-192.png",
     apple: "/apple-icon.png",
   },
-  appleWebApp: { capable: true, title: "Tomaz Finanças", statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: "Tomas Finance", statusBarStyle: "black-translucent" },
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    siteName: "Tomaz Finanças",
+    siteName: "Tomas Finance",
     title: TITLE,
     description: DESCRIPTION,
     url: "/",
