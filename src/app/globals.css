@@ -59,12 +59,14 @@
   }
 }
 
-/* Fundo pontilhado com fade nas bordas — usado na landing page */
+/* Fundo pontilhado com brilho de cor da marca — usado no topo da landing page */
 .bg-grid-fade {
-  background-image: radial-gradient(hsl(var(--muted-foreground) / 0.3) 1px, transparent 1px);
-  background-size: 24px 24px;
-  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 0%, black 40%, transparent 90%);
-  mask-image: radial-gradient(ellipse 65% 55% at 50% 0%, black 40%, transparent 90%);
+  background-image:
+    radial-gradient(hsl(var(--muted-foreground) / 0.35) 1px, transparent 1px),
+    radial-gradient(ellipse 70% 60% at 50% -5%, hsl(var(--primary) / 0.35), transparent 70%);
+  background-size: 24px 24px, 100% 100%;
+  -webkit-mask-image: radial-gradient(ellipse 65% 60% at 50% 0%, black 45%, transparent 95%);
+  mask-image: radial-gradient(ellipse 65% 60% at 50% 0%, black 45%, transparent 95%);
 }
 
 /* Scrollbar discreta */
