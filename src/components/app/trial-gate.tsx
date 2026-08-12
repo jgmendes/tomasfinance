@@ -35,7 +35,7 @@ export function TrialGate({ blocked, trialDaysLeft }: Props) {
             </div>
             <h2 className="text-xl font-bold">Seu período grátis acabou</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Para continuar usando o Tomaz Finanças, assine um plano. Leva menos de 1 minuto via PIX.
+              Para continuar usando o Tomas Finance, assine um plano. Leva menos de 1 minuto via PIX.
             </p>
             <Button asChild size="lg" className="mt-6 w-full">
               <Link href="/plano">

@@ -29,12 +29,12 @@ import {
 // Dados públicos (plano ativo) — sem sessão de usuário, cacheável.
 export const revalidate = 3600;
 
-const NAV = [
+const BASE_NAV = [
   { href: "#produto", label: "Produto" },
   { href: "#negocios", label: "Negócios" },
-  { href: "#preco", label: "Preço" },
-  { href: "#faq", label: "FAQ" },
 ];
+const PRECO_NAV = { href: "#preco", label: "Preço" };
+const FAQ_NAV = { href: "#faq", label: "FAQ" };
 
 const features = [
   { icon: BarChart3, title: "Dashboard completo", desc: "Saldo, receitas, despesas, lucro e fluxo de caixa em tempo real, num só painel." },
@@ -108,6 +108,7 @@ function SectionEyebrow({ icon: Icon, children }: { icon: React.ElementType; chi
 
 export default async function Home() {
   const plan = await getActivePlan();
+  const nav = [...BASE_NAV, ...(plan ? [PRECO_NAV] : []), FAQ_NAV];
 
   return (
     <div className="min-h-screen bg-background">
@@ -115,7 +116,7 @@ export default async function Home() {
         <div className="container flex h-16 items-center justify-between">
           <Logo className="text-lg" />
           <nav className="hidden items-center gap-7 text-sm text-muted-foreground lg:flex">
-            {NAV.map((n) => (
+            {nav.map((n) => (
               <a key={n.href} href={n.href} className="transition-colors hover:text-foreground">
                 {n.label}
               </a>

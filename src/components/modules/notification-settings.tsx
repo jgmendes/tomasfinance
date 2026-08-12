@@ -32,7 +32,7 @@ export function NotificationSettings() {
     if (result === "granted") {
       toast.success("Notificações ativadas!");
       showLocalNotification(
-        "Tomaz Finanças 🔔",
+        "Tomas Finance 🔔",
         "Pronto! Você receberá alertas de contas, metas e saldo aqui."
       );
     } else {

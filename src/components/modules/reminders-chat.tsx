@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { reminderSchema, firstError } from "@/lib/schemas";
-import { cn } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 import { AlarmClock, Bot, Check, Loader2, Send, User, X } from "lucide-react";
 import type { Reminder } from "@/lib/database.types";
 
@@ -18,16 +18,6 @@ function defaultDateTime() {
   d.setSeconds(0, 0);
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function formatDateTime(iso: string) {
-  const d = new Date(iso);
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(d);
 }
 
 export function RemindersChat() {
@@ -188,7 +178,7 @@ export function RemindersChat() {
           </p>
         )}
 
-        <form onSubmit={send} className={cn("flex flex-col gap-2 sm:flex-row")}>
+        <form onSubmit={send} className="flex flex-col gap-2 sm:flex-row">
           <Input
             ref={titleRef}
             value={title}

@@ -58,7 +58,7 @@ export async function POST(request: Request) {
   try {
     const pix = await createPixCharge(
       amount,
-      `Assinatura ${plan.name} (${cycle}) — Tomaz Finanças`,
+      `Assinatura ${plan.name} (${cycle}) — Tomas Finance`,
       `${origin}/api/webhooks/bravive`
     );
 

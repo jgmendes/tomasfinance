@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-/** Marca do Tomaz Finanças: "T" com uma barra de crescimento. */
+/** Marca do Tomas Finance: "T" com uma barra de crescimento. */
 export function LogoMark({ className }: { className?: string }) {
   return (
     <svg

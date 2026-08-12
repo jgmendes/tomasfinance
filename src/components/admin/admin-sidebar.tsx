@@ -91,7 +91,7 @@ export function AdminSidebar({ email }: { email: string }) {
         <div className="flex h-16 items-center gap-2 border-b border-white/10 px-5 font-bold">
           <LogoMark className="h-8 w-8" />
           <div className="leading-tight">
-            <p className="text-sm">Tomaz Finanças</p>
+            <p className="text-sm">Tomas Finance</p>
             <p className="text-[10px] uppercase tracking-wider text-primary">Painel Admin</p>
           </div>
         </div>

@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/app/page-header";
 import { StatCard } from "@/components/app/stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   CashFlowChart,
   CategoryPieChart,
@@ -12,11 +14,12 @@ import {
   computeAccountsBalance,
   expensesByCategory,
   monthlySeries,
+  netWorth,
   pendingTotals,
   sumByType,
   isInMonth,
 } from "@/lib/finance";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDateTime } from "@/lib/utils";
 import {
   Wallet,
   TrendingUp,
@@ -24,25 +27,60 @@ import {
   PiggyBank,
   ArrowDownCircle,
   ArrowUpCircle,
+  Gem,
+  CreditCard,
+  AlarmClock,
+  Receipt,
 } from "lucide-react";
-import type { Category, Transaction } from "@/lib/database.types";
+import type {
+  Category,
+  Company,
+  CreditCard as CreditCardType,
+  Investment,
+  Reminder,
+  TaxSetting,
+  Transaction,
+} from "@/lib/database.types";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
 
-  const [{ data: txs }, { data: accounts }, { data: categories }] =
-    await Promise.all([
-      supabase.from("transactions").select("*").order("date", { ascending: false }),
-      supabase.from("bank_accounts").select("*"),
-      supabase.from("categories").select("*"),
-    ]);
+  const [
+    { data: txs },
+    { data: accounts },
+    { data: categories },
+    { data: investmentsData },
+    { data: creditCardsData },
+    { data: companiesData },
+    { data: taxSettingsData },
+    { data: remindersData },
+  ] = await Promise.all([
+    supabase.from("transactions").select("*").order("date", { ascending: false }),
+    supabase.from("bank_accounts").select("*"),
+    supabase.from("categories").select("*"),
+    supabase.from("investments").select("*"),
+    supabase.from("credit_cards").select("*"),
+    supabase.from("companies").select("*"),
+    supabase.from("tax_settings").select("*"),
+    supabase
+      .from("reminders")
+      .select("*")
+      .eq("status", "pendente")
+      .order("remind_at", { ascending: true })
+      .limit(5),
+  ]);
 
   const transactions = (txs ?? []) as Transaction[];
   const accountsList = accounts ?? [];
   const cats = (categories ?? []) as Category[];
   const catNames = Object.fromEntries(cats.map((c) => [c.id, c.name]));
+  const investments = (investmentsData ?? []) as Investment[];
+  const creditCards = (creditCardsData ?? []) as CreditCardType[];
+  const companies = (companiesData ?? []) as Company[];
+  const taxSettings = (taxSettingsData ?? []) as TaxSetting[];
+  const proximosLembretes = (remindersData ?? []) as Reminder[];
 
   const monthTxs = transactions.filter((t) => isInMonth(t.date));
   const receitasMes = sumByType(monthTxs, "receita");
@@ -50,6 +88,22 @@ export default async function DashboardPage() {
   const lucro = receitasMes - despesasMes;
   const saldoTotal = computeAccountsBalance(accountsList, transactions);
   const { aPagar, aReceber } = pendingTotals(transactions);
+  const patrimonio = netWorth(saldoTotal, investments);
+
+  const limiteTotal = creditCards.reduce((s, c) => s + Number(c.credit_limit), 0);
+  const limiteUsado = creditCards.reduce((s, c) => s + Number(c.used_limit), 0);
+  const limiteDisponivel = limiteTotal - limiteUsado;
+
+  // Imposto estimado do mês: alíquota configurada (Pessoal + cada empresa) sobre a receita do mês daquele escopo.
+  const entidadesFiscais = [null as string | null, ...companies.map((c) => c.id)];
+  const impostoMes = entidadesFiscais.reduce((sum, companyId) => {
+    const setting = taxSettings.find((t) => t.company_id === companyId);
+    if (!setting || Number(setting.rate) <= 0) return sum;
+    const receita = monthTxs
+      .filter((t) => t.type === "receita" && t.company_id === companyId)
+      .reduce((s, t) => s + Number(t.amount), 0);
+    return sum + receita * (Number(setting.rate) / 100);
+  }, 0);
 
   const series = monthlySeries(transactions, 6);
   const pie = categoryLegend(expensesByCategory(monthTxs, catNames).slice(0, 8));
@@ -92,7 +146,7 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           title="Contas a pagar (pendente)"
           value={formatCurrency(aPagar)}
@@ -106,6 +160,29 @@ export default async function DashboardPage() {
           icon={ArrowUpCircle}
           accent="text-sky-500"
           iconBg="bg-sky-500/10"
+        />
+        <StatCard
+          title="Patrimônio"
+          value={formatCurrency(patrimonio)}
+          icon={Gem}
+          accent="text-primary"
+          iconBg="bg-primary/10"
+        />
+        {creditCards.length > 0 && (
+          <StatCard
+            title="Limite disponível (cartões)"
+            value={formatCurrency(limiteDisponivel)}
+            icon={CreditCard}
+            accent="text-muted-foreground"
+            iconBg="bg-muted"
+          />
+        )}
+        <StatCard
+          title="Imposto estimado (mês)"
+          value={formatCurrency(impostoMes)}
+          icon={Receipt}
+          accent="text-amber-500"
+          iconBg="bg-amber-500/10"
         />
       </div>
 
@@ -179,6 +256,41 @@ export default async function DashboardPage() {
               <p className="py-6 text-center text-sm text-muted-foreground">
                 Nenhuma movimentação ainda.
               </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-3">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="flex items-center gap-2">
+              <AlarmClock className="h-4 w-4 text-primary" /> Próximos lembretes
+            </CardTitle>
+            <Link href="/lembretes" className="text-xs text-primary hover:underline">
+              Ver todos
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {proximosLembretes.length === 0 ? (
+              <p className="py-4 text-center text-sm text-muted-foreground">
+                Nenhum lembrete pendente.{" "}
+                <Link href="/lembretes" className="text-primary hover:underline">
+                  Criar um
+                </Link>
+                .
+              </p>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                {proximosLembretes.map((r) => (
+                  <div key={r.id} className="rounded-lg border p-3">
+                    <p className="truncate text-sm font-medium">{r.title}</p>
+                    <Badge variant="warning" className="mt-2 text-[10px]">
+                      {formatDateTime(r.remind_at)}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
             )}
           </CardContent>
         </Card>

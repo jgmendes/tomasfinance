@@ -25,6 +25,18 @@ export function formatDate(date: string | Date) {
   return new Intl.DateTimeFormat("pt-BR").format(d);
 }
 
+/** Data + hora (ex.: usado em lembretes). Espera um timestamp ISO completo. */
+export function formatDateTime(iso: string) {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "—";
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(d);
+}
+
 export function formatPercent(value: number) {
   return `${(value || 0).toFixed(1)}%`;
 }

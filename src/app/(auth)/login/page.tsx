@@ -54,7 +54,7 @@ export default function LoginPage() {
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-bold">Entrar</h1>
         <p className="text-sm text-muted-foreground">
-          Acesse sua conta Tomaz Finanças
+          Acesse sua conta Tomas Finance
         </p>
       </div>
 

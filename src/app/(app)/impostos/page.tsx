@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { PageHeader } from "@/components/app/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -196,19 +197,16 @@ export default function ImpostosPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label>Alíquota que você paga (%)</Label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        min={0}
-                        max={100}
-                        step="0.01"
-                        value={form.rate}
-                        onChange={(e) =>
-                          setForms((prev) => ({ ...prev, [entity.key]: { ...prev[entity.key], rate: e.target.value } }))
-                        }
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                      />
-                    </div>
+                    <Input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step="0.01"
+                      value={form.rate}
+                      onChange={(e) =>
+                        setForms((prev) => ({ ...prev, [entity.key]: { ...prev[entity.key], rate: e.target.value } }))
+                      }
+                    />
                   </div>
                 </div>
 

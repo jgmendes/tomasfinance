@@ -1,5 +1,5 @@
 // Service Worker simples — cache de assets estáticos para experiência offline básica.
-const CACHE = "tomaz-financas-v2";
+const CACHE = "tomas-finance-v3";
 const ASSETS = ["/", "/dashboard", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", (event) => {

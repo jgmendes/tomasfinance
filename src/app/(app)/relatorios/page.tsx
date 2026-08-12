@@ -108,7 +108,7 @@ export default function RelatoriosPage() {
     const doc = new jsPDF();
     doc.setFontSize(16);
     doc.setTextColor(124, 58, 237);
-    doc.text("Tomaz Finanças — Relatório", 14, 18);
+    doc.text("Tomas Finance — Relatório", 14, 18);
     doc.setFontSize(10);
     doc.setTextColor(80);
     doc.text(`Período: ${formatDate(start)} a ${formatDate(end)}`, 14, 26);

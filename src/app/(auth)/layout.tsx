@@ -17,7 +17,7 @@ export default function AuthLayout({
           <div className="rounded-xl bg-white/15 p-1">
             <LogoMark className="h-8 w-8" />
           </div>
-          Tomaz Finanças
+          Tomas Finance
         </Link>
         <div>
           <h2 className="text-3xl font-bold leading-tight">
@@ -29,7 +29,7 @@ export default function AuthLayout({
           </p>
         </div>
         <p className="text-sm text-primary-foreground/60">
-          © {new Date().getFullYear()} Tomaz Finanças
+          © {new Date().getFullYear()} Tomas Finance
         </p>
       </div>
 
