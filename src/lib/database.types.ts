@@ -30,6 +30,12 @@ export type TransactionScope = "pessoal" | "empresarial";
 export type BillingStatus = "trial" | "ativa" | "atrasada" | "cancelada";
 export type ChargeStatus = "pendente" | "pago" | "expirado" | "falhou" | "cancelado";
 export type ReminderStatus = "pendente" | "concluido" | "cancelado";
+export type TaxRegime =
+  | "mei"
+  | "simples_nacional"
+  | "lucro_presumido"
+  | "lucro_real"
+  | "pessoa_fisica";
 
 type Timestamps = { created_at: string; updated_at: string | null };
 
@@ -87,6 +93,14 @@ export type Beneficiary = Timestamps & {
   name: string;
   document: string | null;
   notes: string | null;
+};
+
+export type TaxSetting = Timestamps & {
+  id: string;
+  user_id: string;
+  company_id: string | null;
+  regime: TaxRegime;
+  rate: number;
 };
 
 export type Reminder = Timestamps & {
@@ -164,6 +178,7 @@ export type Transaction = Timestamps & {
   invoice_issued: boolean | null;
   invoice_number: string | null;
   beneficiary_id: string | null;
+  receipt_path: string | null;
 };
 
 export type BillingCycle = "mensal" | "anual";
@@ -332,6 +347,7 @@ export type Database = {
       companies: TableDef<Company>;
       beneficiaries: TableDef<Beneficiary>;
       reminders: TableDef<Reminder>;
+      tax_settings: TableDef<TaxSetting>;
       audit_logs: TableDef<AuditLog>;
       categories: TableDef<Category>;
       bank_accounts: TableDef<BankAccount>;

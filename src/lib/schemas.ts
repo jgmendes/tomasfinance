@@ -26,6 +26,16 @@ export const reminderSchema = z.object({
   remind_at: z.string().min(1, "Informe a data e hora."),
 });
 
+export const taxSettingSchema = z.object({
+  regime: z.enum(["mei", "simples_nacional", "lucro_presumido", "lucro_real", "pessoa_fisica"], {
+    errorMap: () => ({ message: "Selecione o regime tributário." }),
+  }),
+  rate: z.coerce
+    .number({ invalid_type_error: "Informe a alíquota." })
+    .min(0, "A alíquota não pode ser negativa.")
+    .max(100, "A alíquota não pode passar de 100%."),
+});
+
 /** Helper: valida e retorna a primeira mensagem de erro (ou null se ok). */
 export function firstError<T extends z.ZodTypeAny>(
   schema: T,

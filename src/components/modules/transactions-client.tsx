@@ -41,7 +41,7 @@ import { useConfirm } from "@/components/app/confirm-provider";
 import { formatCurrency, formatDate, currentMonthRange } from "@/lib/utils";
 import { suggestCategory } from "@/lib/categorize";
 import { transactionSchema, beneficiarySchema, firstError } from "@/lib/schemas";
-import { Loader2, Plus, Trash2, TrendingUp, TrendingDown, Pencil, Search, X, FileCheck, FileX, UserCheck } from "lucide-react";
+import { Loader2, Plus, Trash2, TrendingUp, TrendingDown, Pencil, Search, X, FileCheck, FileX, UserCheck, Paperclip, Download } from "lucide-react";
 import type {
   BankAccount,
   Beneficiary,
@@ -85,7 +85,10 @@ const emptyForm = {
   invoice_issued: "" as "" | "sim" | "nao",
   invoice_number: "",
   beneficiary_id: "",
+  receipt_path: "",
 };
+
+const RECEIPTS_BUCKET = "comprovantes";
 
 const emptyBeneficiaryForm = { name: "", document: "" };
 
@@ -107,6 +110,9 @@ export function TransactionsClient({ type }: Props) {
   const [beneficiaryDialogOpen, setBeneficiaryDialogOpen] = useState(false);
   const [beneficiaryForm, setBeneficiaryForm] = useState(emptyBeneficiaryForm);
   const [savingBeneficiary, setSavingBeneficiary] = useState(false);
+
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const [items, setItems] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -172,6 +178,7 @@ export function TransactionsClient({ type }: Props) {
 
   function openNew() {
     setForm({ ...emptyForm, status: isReceita ? "recebido" : "pago" });
+    setReceiptFile(null);
     setOpen(true);
   }
 
@@ -192,8 +199,22 @@ export function TransactionsClient({ type }: Props) {
       invoice_issued: t.invoice_issued == null ? "" : t.invoice_issued ? "sim" : "nao",
       invoice_number: t.invoice_number ?? "",
       beneficiary_id: t.beneficiary_id ?? "",
+      receipt_path: t.receipt_path ?? "",
     });
+    setReceiptFile(null);
     setOpen(true);
+  }
+
+  /** Gera um link temporário e abre o comprovante em nova aba. */
+  async function downloadReceipt(path: string, id: string) {
+    setDownloadingId(id);
+    const { data, error } = await supabase.storage.from(RECEIPTS_BUCKET).createSignedUrl(path, 60);
+    setDownloadingId(null);
+    if (error || !data?.signedUrl) {
+      toast.error("Erro ao baixar comprovante", { description: error?.message });
+      return;
+    }
+    window.open(data.signedUrl, "_blank");
   }
 
   function onBeneficiarySelect(v: string) {
@@ -285,15 +306,36 @@ export function TransactionsClient({ type }: Props) {
     };
 
     const res = form.id
-      ? await supabase.from("transactions").update(payload).eq("id", form.id)
-      : await supabase.from("transactions").insert(payload);
+      ? await supabase.from("transactions").update(payload).eq("id", form.id).select().single()
+      : await supabase.from("transactions").insert(payload).select().single();
 
-    setSaving(false);
-    if (res.error) {
-      toast.error("Erro ao salvar", { description: res.error.message });
+    if (res.error || !res.data) {
+      setSaving(false);
+      toast.error("Erro ao salvar", { description: res.error?.message });
       return;
     }
+
+    // Envia o comprovante (se selecionado) só depois de garantir o id da transação.
+    if (receiptFile) {
+      const transactionId = res.data.id as string;
+      const ext = receiptFile.name.split(".").pop();
+      const path = `${user.id}/${transactionId}-${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from(RECEIPTS_BUCKET)
+        .upload(path, receiptFile, { upsert: true });
+      if (uploadError) {
+        setSaving(false);
+        toast.error("Salvo, mas o comprovante não foi enviado", { description: uploadError.message });
+        setOpen(false);
+        load();
+        return;
+      }
+      await supabase.from("transactions").update({ receipt_path: path }).eq("id", transactionId);
+    }
+
+    setSaving(false);
     toast.success(form.id ? "Atualizado!" : "Cadastrado!");
+    setReceiptFile(null);
     setOpen(false);
     load();
   }
@@ -536,6 +578,19 @@ export function TransactionsClient({ type }: Props) {
                 </div>
               )}
               <div className="grid gap-2">
+                <Label>Comprovante (ex.: comprovante bancário)</Label>
+                <Input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) => setReceiptFile(e.target.files?.[0] ?? null)}
+                />
+                {form.receipt_path && !receiptFile && (
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Paperclip className="h-3.5 w-3.5" /> Já tem um comprovante anexado — escolha outro arquivo pra substituir.
+                  </p>
+                )}
+              </div>
+              <div className="grid gap-2">
                 <Label>Observações</Label>
                 <Textarea
                   value={form.notes}
@@ -747,6 +802,21 @@ export function TransactionsClient({ type }: Props) {
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-1">
+                        {t.receipt_path && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            title="Baixar comprovante"
+                            disabled={downloadingId === t.id}
+                            onClick={() => downloadReceipt(t.receipt_path as string, t.id)}
+                          >
+                            {downloadingId === t.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Download className="h-4 w-4" />
+                            )}
+                          </Button>
+                        )}
                         <Button size="icon" variant="ghost" onClick={() => openEdit(t)}>
                           <Pencil className="h-4 w-4" />
                         </Button>

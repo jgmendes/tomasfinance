@@ -15,6 +15,7 @@ import {
   Settings,
   Shield,
   AlarmClock,
+  Receipt,
   type LucideIcon,
 } from "lucide-react";
 
@@ -57,6 +58,7 @@ export const navGroups: { title: string; items: NavItem[] }[] = [
       { label: "Empresas", href: "/empresas", icon: Building2 },
       { label: "Beneficiários", href: "/beneficiarios", icon: UserCheck },
       { label: "Funcionários", href: "/funcionarios", icon: Users },
+      { label: "Impostos", href: "/impostos", icon: Receipt },
       { label: "Relatórios", href: "/relatorios", icon: FileText },
     ],
   },
