@@ -85,7 +85,6 @@ export default async function DashboardPage() {
   const monthTxs = transactions.filter((t) => isInMonth(t.date));
   const receitasMes = sumByType(monthTxs, "receita");
   const despesasMes = sumByType(monthTxs, "despesa");
-  const lucro = receitasMes - despesasMes;
   const saldoTotal = computeAccountsBalance(accountsList, transactions);
   const { aPagar, aReceber } = pendingTotals(transactions);
   const patrimonio = netWorth(saldoTotal, investments);
@@ -104,6 +103,9 @@ export default async function DashboardPage() {
       .reduce((s, t) => s + Number(t.amount), 0);
     return sum + receita * (Number(setting.rate) / 100);
   }, 0);
+
+  // Lucro líquido = receitas - despesas - imposto estimado do mês.
+  const lucro = receitasMes - despesasMes - impostoMes;
 
   const series = monthlySeries(transactions, 6);
   const pie = categoryLegend(expensesByCategory(monthTxs, catNames).slice(0, 8));
@@ -140,6 +142,7 @@ export default async function DashboardPage() {
         <StatCard
           title="Lucro líquido"
           value={formatCurrency(lucro)}
+          hint="Receitas − despesas − imposto estimado"
           icon={PiggyBank}
           accent={lucro >= 0 ? "text-emerald-500" : "text-red-500"}
           iconBg={lucro >= 0 ? "bg-emerald-500/10" : "bg-red-500/10"}
