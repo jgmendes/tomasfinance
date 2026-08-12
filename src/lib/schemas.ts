@@ -26,6 +26,11 @@ export const reminderSchema = z.object({
   remind_at: z.string().min(1, "Informe a data e hora."),
 });
 
+export const onboardingCompanySchema = z.object({
+  name: z.string().trim().min(2, "Informe o nome da empresa."),
+  cnpj: z.string().trim().optional(),
+});
+
 export const taxSettingSchema = z.object({
   regime: z.enum(["mei", "simples_nacional", "lucro_presumido", "lucro_real", "pessoa_fisica"], {
     errorMap: () => ({ message: "Selecione o regime tributário." }),

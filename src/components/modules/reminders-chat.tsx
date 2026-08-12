@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { reminderSchema, firstError } from "@/lib/schemas";
-import { formatDateTime } from "@/lib/utils";
-import { AlarmClock, Bot, Check, Loader2, Send, User, X } from "lucide-react";
+import { cn, formatDateTime } from "@/lib/utils";
+import { AlarmClock, Bot, Check, Loader2, Repeat, Send, User, X } from "lucide-react";
 import type { Reminder } from "@/lib/database.types";
 
 function defaultDateTime() {
@@ -29,6 +29,7 @@ export function RemindersChat() {
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState("");
   const [remindAt, setRemindAt] = useState(defaultDateTime());
+  const [repeatDaily, setRepeatDaily] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -85,6 +86,7 @@ export function RemindersChat() {
       remind_at: new Date(remindAt).toISOString(),
       status: "pendente",
       notified: false,
+      recurrence: repeatDaily ? "daily" : null,
     });
     setSaving(false);
     if (error) {
@@ -93,6 +95,7 @@ export function RemindersChat() {
     }
     setTitle("");
     setRemindAt(defaultDateTime());
+    setRepeatDaily(false);
     load();
   }
 
@@ -131,7 +134,10 @@ export function RemindersChat() {
                   <User className="h-4 w-4" />
                 </div>
                 <div className="max-w-[80%] space-y-1.5 rounded-2xl bg-primary text-primary-foreground px-4 py-2 text-sm">
-                  <p>{r.title}</p>
+                  <p className="flex items-center gap-1.5">
+                    {r.title}
+                    {r.recurrence === "daily" && <Repeat className="h-3 w-3 shrink-0 opacity-70" />}
+                  </p>
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge
                       variant={
@@ -177,6 +183,20 @@ export function RemindersChat() {
             <span className="font-medium">{formatDateTime(pendentes[0].remind_at)}</span>.
           </p>
         )}
+
+        <label className="flex w-fit cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+          <button
+            type="button"
+            onClick={() => setRepeatDaily(!repeatDaily)}
+            className={cn(
+              "grid h-4 w-4 shrink-0 place-items-center rounded border",
+              repeatDaily ? "border-primary bg-primary text-primary-foreground" : "border-input"
+            )}
+          >
+            {repeatDaily && <Check className="h-3 w-3" />}
+          </button>
+          <Repeat className="h-3.5 w-3.5" /> Repetir todo dia
+        </label>
 
         <form onSubmit={send} className="flex flex-col gap-2 sm:flex-row">
           <Input

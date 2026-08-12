@@ -33,6 +33,20 @@ export function ReminderWatcher() {
           link: "/lembretes",
         });
         await supabase.from("reminders").update({ notified: true }).eq("id", r.id);
+
+        // Lembrete recorrente: agenda a próxima ocorrência (ex.: mesmo horário amanhã).
+        if (r.recurrence === "daily") {
+          const next = new Date(r.remind_at);
+          next.setDate(next.getDate() + 1);
+          await supabase.from("reminders").insert({
+            user_id: r.user_id,
+            title: r.title,
+            remind_at: next.toISOString(),
+            status: "pendente",
+            notified: false,
+            recurrence: "daily",
+          });
+        }
       }
     }
 

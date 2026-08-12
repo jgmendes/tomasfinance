@@ -9,7 +9,8 @@ import { ConfirmProvider } from "@/components/app/confirm-provider";
 import { Logo } from "@/components/app/logo";
 import { TrialGate } from "@/components/app/trial-gate";
 import { ReminderWatcher } from "@/components/app/reminder-watcher";
-import type { BillingSubscription } from "@/lib/database.types";
+import { OnboardingGate } from "@/components/app/onboarding-gate";
+import type { BillingSubscription, UsageType } from "@/lib/database.types";
 
 // Área logada: nunca deve ser indexada por buscadores.
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -28,7 +29,7 @@ export default async function AppLayout({
 
   const { data } = await supabase
     .from("profiles")
-    .select("full_name, avatar_url, role, mfa_enabled")
+    .select("*")
     .eq("id", user.id)
     .single();
   const profile = data as {
@@ -36,8 +37,14 @@ export default async function AppLayout({
     avatar_url: string | null;
     role: string | null;
     mfa_enabled: boolean | null;
+    onboarding_completed: boolean | null;
+    usage_type: UsageType | null;
   } | null;
   const isAdmin = profile?.role === "admin";
+
+  const { count: companiesCount } = await supabase
+    .from("companies")
+    .select("id", { count: "exact", head: true });
 
   // 2FA obrigatório: se o usuário tem 2FA ativo e a sessão ainda não está
   // em aal2 (não passou pelo desafio neste login), exige a verificação.
@@ -101,6 +108,12 @@ export default async function AppLayout({
           />
           {/* única área rolável; padding-bottom no mobile por causa da nav inferior */}
           <main className="flex-1 overflow-y-auto p-4 pb-24 lg:p-6 lg:pb-6">
+            <OnboardingGate
+              completed={profile?.onboarding_completed ?? true}
+              usageType={profile?.usage_type ?? null}
+              hasCompany={(companiesCount ?? 0) > 0}
+              fullName={profile?.full_name ?? null}
+            />
             <TrialGate blocked={blocked} trialDaysLeft={trialDaysLeft} />
             {children}
           </main>

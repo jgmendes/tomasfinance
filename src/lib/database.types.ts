@@ -36,6 +36,8 @@ export type TaxRegime =
   | "lucro_presumido"
   | "lucro_real"
   | "pessoa_fisica";
+export type UsageType = "pessoal" | "empresarial" | "ambos";
+export type ReminderRecurrence = "daily";
 
 type Timestamps = { created_at: string; updated_at: string | null };
 
@@ -48,6 +50,8 @@ export type Profile = Timestamps & {
   role: UserRole;
   email: string | null;
   mfa_enabled: boolean;
+  onboarding_completed: boolean;
+  usage_type: UsageType | null;
 };
 
 export type Kyc = Timestamps & {
@@ -110,6 +114,7 @@ export type Reminder = Timestamps & {
   remind_at: string;
   status: ReminderStatus;
   notified: boolean;
+  recurrence: ReminderRecurrence | null;
 };
 
 export type AuditLog = {
