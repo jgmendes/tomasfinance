@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ServiceWorkerRegister } from "@/components/app/sw-register";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const displayFont = Space_Grotesk({ subsets: ["latin"], variable: "--font-display" });
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -60,7 +61,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${displayFont.variable} font-sans`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

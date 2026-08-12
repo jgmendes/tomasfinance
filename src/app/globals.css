@@ -59,6 +59,14 @@
   }
 }
 
+/* Fundo pontilhado com fade nas bordas — usado na landing page */
+.bg-grid-fade {
+  background-image: radial-gradient(hsl(var(--muted-foreground) / 0.3) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 0%, black 40%, transparent 90%);
+  mask-image: radial-gradient(ellipse 65% 55% at 50% 0%, black 40%, transparent 90%);
+}
+
 /* Scrollbar discreta */
 ::-webkit-scrollbar {
   width: 8px;
