@@ -3,7 +3,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Logo, LogoMark } from "@/components/app/logo";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/config";
-import { cn, formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import type { Database, Plan } from "@/lib/database.types";
 import {
   ArrowRight,
@@ -381,17 +381,11 @@ export default async function Home() {
       </section>
 
       <footer className="border-t py-10">
-        <div className="container flex flex-col items-center justify-between gap-4 text-sm text-muted-foreground sm:flex-row">
+        <div className="container flex flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
           <Logo className="text-sm" />
           <span className="text-center">
-            © {new Date().getFullYear()} Tomaz Finanças. Feito com Next.js + Supabase.
-            <br className="sm:hidden" />
-            <span className="sm:before:content-['_·_']">CNPJ 682487171000190</span>
+            © {new Date().getFullYear()} Tomaz Finanças · CNPJ 682487171000190
           </span>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className={cn("hover:text-foreground")}>Entrar</Link>
-            <Link href="/cadastro" className={cn("hover:text-foreground")}>Criar conta</Link>
-          </div>
         </div>
       </footer>
     </div>
