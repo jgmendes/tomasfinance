@@ -41,7 +41,7 @@ export async function GET() {
 
   // Narrativa do CFO com IA (opcional)
   let aiNarrative: string | null = null;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (apiKey) {
     try {
       aiNarrative = await generateAINarrative(apiKey, summary);
@@ -53,11 +53,18 @@ export async function GET() {
   return NextResponse.json({ summary, insights, aiNarrative });
 }
 
+// Alias "latest" em vez de fixar uma versão — evita quebrar quando a Google
+// aposenta modelos antigos (ex.: gemini-2.5-flash parou de aceitar chaves novas).
+const GEMINI_MODEL = "gemini-flash-latest";
+
 async function generateAINarrative(
   apiKey: string,
   summary: ReturnType<typeof buildSummary>
 ): Promise<string> {
-  const prompt = `Você é um CFO virtual experiente e direto. Analise os números financeiros do usuário (em BRL) e escreva um resumo executivo em português, com no máximo 6 frases, destacando saúde financeira, riscos e 2 ações práticas. Seja específico com os valores.
+  const systemInstruction =
+    "Você é um CFO virtual: um agente financeiro experiente, direto e especializado em finanças pessoais e empresariais, que responde em português do Brasil.";
+
+  const prompt = `Analise os números financeiros do usuário (em BRL) e escreva um resumo executivo em português, com no máximo 6 frases, destacando saúde financeira, riscos e 2 ações práticas. Seja específico com os valores.
 
 Dados:
 - Saldo total: ${formatCurrency(summary.saldoTotal)}
@@ -69,21 +76,25 @@ Dados:
 - Custo de assinaturas/mês: ${formatCurrency(summary.custoAssinaturasMensal)}
 - Maiores despesas: ${summary.maioresDespesas.map((d) => `${d.name} (${formatCurrency(d.value)})`).join(", ") || "n/d"}`;
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 600,
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        // maxOutputTokens generoso: modelos Gemini "thinking" consomem parte
+        // do orçamento pensando antes de responder, então precisa de folga.
+        generationConfig: { maxOutputTokens: 1500 },
+      }),
+    }
+  );
 
   if (!res.ok) throw new Error("AI request failed");
   const data = await res.json();
-  return data?.content?.[0]?.text ?? "";
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 }

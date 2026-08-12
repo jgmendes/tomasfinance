@@ -17,7 +17,7 @@ Construído com **Next.js 14 (App Router) · TypeScript · Tailwind CSS · Shadc
 - **Funcionários**: cargo, salário, comissão e dia de pagamento.
 - **Assinaturas recorrentes**: OpenAI, Claude, Vercel, AWS… com custo mensal e projeção anual.
 - **Relatórios**: DRE simplificado, demonstrativos e exportação **CSV / Excel / PDF (impressão)**.
-- **CFO Virtual (IA)**: análise de gastos, detecção de desperdícios, runway financeiro, previsões e sugestões. Funciona offline (regras) e com **Claude** se você configurar a chave.
+- **CFO Virtual (IA)**: análise de gastos, detecção de desperdícios, runway financeiro, previsões e sugestões. Funciona offline (regras) e com **Gemini** se você configurar a chave.
 - **Dashboard Executivo**: patrimônio, receita/despesa anual, lucro acumulado, crescimento, empresas mais lucrativas e projeção de 12 meses.
 - **Segurança**: Row Level Security (RLS) em todas as tabelas — cada usuário só vê os próprios dados.
 
@@ -63,7 +63,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://SEU-PROJETO.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-anon-key-aqui
 
 # (Opcional) CFO Virtual com IA real:
-ANTHROPIC_API_KEY=sua-chave-anthropic
+GEMINI_API_KEY=sua-chave-gemini
 ```
 
 > ⚠️ Nunca exponha a `service_role` no frontend. Este app não precisa dela.
@@ -87,9 +87,9 @@ npm run dev
 ---
 
 ## 🤖 Ativar o CFO Virtual com IA (opcional)
-Sem a chave, o CFO já funciona com análise local por regras. Para ter um **resumo executivo narrativo** gerado pela IA:
-1. Gere uma chave em https://console.anthropic.com → **API Keys**.
-2. Coloque em `ANTHROPIC_API_KEY` no `.env.local`.
+Sem a chave, o CFO já funciona com análise local por regras. Para ter um **resumo executivo narrativo** gerado pela IA (Google Gemini):
+1. Gere uma chave em https://aistudio.google.com/apikey.
+2. Coloque em `GEMINI_API_KEY` no `.env.local`.
 3. Reinicie o `npm run dev`. O resumo aparece no topo da página **CFO Virtual**.
 
 ## ☁️ Deploy (Vercel)

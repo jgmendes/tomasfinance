@@ -82,7 +82,7 @@ export default function CfoPage() {
                 <p className="font-semibold">Resumo do seu CFO</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {aiNarrative ??
-                    "Análise gerada localmente com base nas suas movimentações. Para um resumo narrativo com IA, configure a variável ANTHROPIC_API_KEY."}
+                    "Análise gerada localmente com base nas suas movimentações. Para um resumo narrativo com IA, configure a variável GEMINI_API_KEY."}
                 </p>
               </div>
             </CardContent>

@@ -43,11 +43,11 @@ export async function POST(request: Request) {
   const catNames = Object.fromEntries(categories.map((c) => [c.id, c.name]));
   const summary = buildSummary(transactions, accounts, subscriptions, catNames);
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (apiKey) {
     try {
-      const reply = await askClaude(apiKey, summary, history, message);
+      const reply = await askGemini(apiKey, summary, history, message);
       return NextResponse.json({ reply });
     } catch {
       // cai no fallback
@@ -57,13 +57,17 @@ export async function POST(request: Request) {
   return NextResponse.json({ reply: fallbackAnswer(summary, message) });
 }
 
-async function askClaude(
+// Alias "latest" em vez de fixar uma versão — evita quebrar quando a Google
+// aposenta modelos antigos (ex.: gemini-2.5-flash parou de aceitar chaves novas).
+const GEMINI_MODEL = "gemini-flash-latest";
+
+async function askGemini(
   apiKey: string,
   summary: ReturnType<typeof buildSummary>,
   history: ChatMessage[],
   message: string
 ) {
-  const system = `Você é o CFO Virtual do usuário, um consultor financeiro objetivo e amigável que responde em português do Brasil. Use SEMPRE os dados financeiros abaixo para embasar respostas. Seja direto, cite valores e dê recomendações práticas. Se perguntarem se podem gastar algo, compare com saldo, lucro do mês e runway.
+  const systemInstruction = `Você é o CFO Virtual do usuário: um agente financeiro objetivo e amigável, especializado em finanças pessoais e empresariais, que responde em português do Brasil. Use SEMPRE os dados financeiros abaixo para embasar respostas. Seja direto, cite valores e dê recomendações práticas. Se perguntarem se podem gastar algo, compare com saldo, lucro do mês e runway. Nunca invente números que não estejam nos dados abaixo.
 
 DADOS FINANCEIROS ATUAIS:
 - Saldo total: ${formatCurrency(summary.saldoTotal)}
@@ -75,28 +79,34 @@ DADOS FINANCEIROS ATUAIS:
 - Custo de assinaturas/mês: ${formatCurrency(summary.custoAssinaturasMensal)}
 - Maiores despesas: ${summary.maioresDespesas.map((d) => `${d.name} (${formatCurrency(d.value)})`).join(", ") || "n/d"}`;
 
-  const messages = [
-    ...history.slice(-8).map((m) => ({ role: m.role, content: m.content })),
-    { role: "user" as const, content: message },
+  const contents = [
+    ...history.slice(-8).map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    })),
+    { role: "user" as const, parts: [{ text: message }] },
   ];
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 800,
-      system,
-      messages,
-    }),
-  });
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        contents,
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        // maxOutputTokens generoso: modelos Gemini "thinking" consomem parte
+        // do orçamento pensando antes de responder, então precisa de folga.
+        generationConfig: { maxOutputTokens: 2048 },
+      }),
+    }
+  );
   if (!res.ok) throw new Error("AI failed");
   const data = await res.json();
-  return data?.content?.[0]?.text ?? "";
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 }
 
 /** Resposta sem IA: cobre perguntas comuns usando regras. */
@@ -132,5 +142,5 @@ function fallbackAnswer(
       : `Cadastre suas despesas para eu sugerir onde economizar.`;
   }
 
-  return `Resumo rápido: saldo ${formatCurrency(summary.saldoTotal)}, lucro do mês ${formatCurrency(summary.lucroMes)}, despesa média ${formatCurrency(summary.mediaDespesas6m)}/mês${summary.runwayMeses ? `, runway ~${summary.runwayMeses.toFixed(1)} meses` : ""}. Pergunte coisas como "posso gastar R$ 2.000?", "como economizar?" ou "qual meu runway?". (Para respostas mais inteligentes, configure a ANTHROPIC_API_KEY.)`;
+  return `Resumo rápido: saldo ${formatCurrency(summary.saldoTotal)}, lucro do mês ${formatCurrency(summary.lucroMes)}, despesa média ${formatCurrency(summary.mediaDespesas6m)}/mês${summary.runwayMeses ? `, runway ~${summary.runwayMeses.toFixed(1)} meses` : ""}. Pergunte coisas como "posso gastar R$ 2.000?", "como economizar?" ou "qual meu runway?". (Para respostas mais inteligentes, configure a GEMINI_API_KEY.)`;
 }
