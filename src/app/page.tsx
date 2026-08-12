@@ -383,7 +383,11 @@ export default async function Home() {
       <footer className="border-t py-10">
         <div className="container flex flex-col items-center justify-between gap-4 text-sm text-muted-foreground sm:flex-row">
           <Logo className="text-sm" />
-          <span>© {new Date().getFullYear()} Tomaz Finanças. Feito com Next.js + Supabase.</span>
+          <span className="text-center">
+            © {new Date().getFullYear()} Tomaz Finanças. Feito com Next.js + Supabase.
+            <br className="sm:hidden" />
+            <span className="sm:before:content-['_·_']">CNPJ 682487171000190</span>
+          </span>
           <div className="flex items-center gap-4">
             <Link href="/login" className={cn("hover:text-foreground")}>Entrar</Link>
             <Link href="/cadastro" className={cn("hover:text-foreground")}>Criar conta</Link>
