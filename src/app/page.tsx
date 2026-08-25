@@ -385,7 +385,7 @@ export default async function Home() {
         <div className="container flex flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
           <Logo className="text-sm" />
           <span className="text-center">
-            © {new Date().getFullYear()} Tomas Finance · CNPJ 682487171000190
+            © {new Date().getFullYear()} Tomas Finance · CNPJ 68.248.717/0001-90
           </span>
         </div>
       </footer>
