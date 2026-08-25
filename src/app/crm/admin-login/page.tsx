@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
         return;
       }
       toast.success("Bem-vindo, admin!");
-      router.push("/admin");
+      router.push("/crm/admin");
       router.refresh();
     } catch (err) {
       toast.error("Erro ao entrar", {

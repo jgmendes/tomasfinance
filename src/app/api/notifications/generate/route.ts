@@ -76,7 +76,7 @@ export async function POST() {
         title: `Conta a vencer: ${t.description}`,
         message: `${formatCurrency(Number(t.amount))} vence em ${formatDate(ref)} (${d === 0 ? "hoje" : `${d} dia(s)`}).`,
         type: d <= 2 ? "danger" : "warning",
-        link: "/despesas",
+        link: "/crm/despesas",
       });
     }
   }
@@ -90,7 +90,7 @@ export async function POST() {
         title: `Fatura próxima: ${c.name}`,
         message: `Vencimento dia ${c.due_day} (em ${diff} dia(s)). Utilizado: ${formatCurrency(Number(c.used_limit))}.`,
         type: "warning",
-        link: "/cartoes",
+        link: "/crm/cartoes",
       });
     }
   }
@@ -104,7 +104,7 @@ export async function POST() {
         title: `Cobrança próxima: ${s.name}`,
         message: `${formatCurrency(Number(s.amount))} será cobrado em ${formatDate(s.next_charge_date)}.`,
         type: "info",
-        link: "/assinaturas",
+        link: "/crm/assinaturas",
       });
     }
   }
@@ -117,7 +117,7 @@ export async function POST() {
         title: `Meta atingida: ${g.title}`,
         message: `Parabéns! Você alcançou ${formatCurrency(Number(g.target_amount))}. 🎉`,
         type: "success",
-        link: "/metas",
+        link: "/crm/metas",
       });
     }
   }
@@ -131,7 +131,7 @@ export async function POST() {
       title: "Saldo baixo",
       message: `Seu saldo (${formatCurrency(saldo)}) está abaixo da sua despesa média mensal (${formatCurrency(mediaDespesas)}).`,
       type: "danger",
-      link: "/contas",
+      link: "/crm/contas",
     });
   }
 

@@ -42,32 +42,32 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isAuthRoute =
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/cadastro") ||
-    pathname.startsWith("/recuperar-senha") ||
-    pathname.startsWith("/redefinir-senha") ||
-    pathname.startsWith("/auth");
+    pathname.startsWith("/crm/login") ||
+    pathname.startsWith("/crm/cadastro") ||
+    pathname.startsWith("/crm/recuperar-senha") ||
+    pathname.startsWith("/crm/redefinir-senha") ||
+    pathname.startsWith("/crm/auth");
 
   const isPublicAsset =
     pathname === "/" ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") || // rotas de API cuidam da própria auth
-    pathname.startsWith("/admin-login") ||
+    pathname.startsWith("/crm/admin-login") ||
     pathname === "/manifest.webmanifest" ||
     pathname === "/sw.js" ||
     pathname.startsWith("/icon-");
 
-  // Não autenticado tentando acessar rota privada -> login
-  if (!user && !isAuthRoute && !isPublicAsset) {
+  // Não autenticado tentando acessar rota privada (dentro de /crm) -> login
+  if (!user && pathname.startsWith("/crm") && !isAuthRoute && !isPublicAsset) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/login";
+    redirectUrl.pathname = "/crm/login";
     return NextResponse.redirect(redirectUrl);
   }
 
   // Autenticado tentando acessar páginas de auth -> dashboard
   if (user && isAuthRoute) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/dashboard";
+    redirectUrl.pathname = "/crm/dashboard";
     return NextResponse.redirect(redirectUrl);
   }
 

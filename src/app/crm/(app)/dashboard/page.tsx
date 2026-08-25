@@ -270,7 +270,7 @@ export default async function DashboardPage() {
             <CardTitle className="flex items-center gap-2">
               <AlarmClock className="h-4 w-4 text-primary" /> Próximos lembretes
             </CardTitle>
-            <Link href="/lembretes" className="text-xs text-primary hover:underline">
+            <Link href="/crm/lembretes" className="text-xs text-primary hover:underline">
               Ver todos
             </Link>
           </CardHeader>
@@ -278,7 +278,7 @@ export default async function DashboardPage() {
             {proximosLembretes.length === 0 ? (
               <p className="py-4 text-center text-sm text-muted-foreground">
                 Nenhum lembrete pendente.{" "}
-                <Link href="/lembretes" className="text-primary hover:underline">
+                <Link href="/crm/lembretes" className="text-primary hover:underline">
                   Criar um
                 </Link>
                 .

@@ -19,10 +19,10 @@ import {
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
-  { label: "Visão Geral", href: "/admin", icon: LayoutDashboard },
-  { label: "Usuários", href: "/admin/usuarios", icon: Users },
-  { label: "KYC", href: "/admin/kyc", icon: ShieldCheck },
-  { label: "Assinaturas", href: "/admin/assinaturas", icon: Sparkles },
+  { label: "Visão Geral", href: "/crm/admin", icon: LayoutDashboard },
+  { label: "Usuários", href: "/crm/admin/usuarios", icon: Users },
+  { label: "KYC", href: "/crm/admin/kyc", icon: ShieldCheck },
+  { label: "Assinaturas", href: "/crm/admin/assinaturas", icon: Sparkles },
 ];
 
 export function AdminSidebar({ email }: { email: string }) {
@@ -33,13 +33,13 @@ export function AdminSidebar({ email }: { email: string }) {
 
   async function logout() {
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/crm/login");
   }
 
   const Nav = (
     <nav className="flex flex-1 flex-col gap-1 p-3">
       {ITEMS.map((item) => {
-        const active = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+        const active = pathname === item.href || (item.href !== "/crm/admin" && pathname.startsWith(item.href));
         return (
           <Link
             key={item.href}
@@ -56,7 +56,7 @@ export function AdminSidebar({ email }: { email: string }) {
         );
       })}
       <div className="mt-auto space-y-1 pt-4">
-        <Link href="/dashboard" onClick={() => setOpen(false)}
+        <Link href="/crm/dashboard" onClick={() => setOpen(false)}
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400 hover:bg-white/10 hover:text-white">
           <ArrowLeft className="h-4 w-4" /> Voltar ao app
         </Link>

@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   const { data, error } = await admin.auth.admin.generateLink({
     type: "magiclink",
     email,
-    options: { redirectTo: `${origin}/auth/callback?next=/dashboard` },
+    options: { redirectTo: `${origin}/crm/auth/callback?next=/crm/dashboard` },
   });
 
   if (error || !data?.properties?.action_link) {

@@ -24,13 +24,13 @@ export function ReminderWatcher() {
       if (cancelled || due.length === 0) return;
 
       for (const r of due) {
-        await showLocalNotification("Lembrete", r.title, "/lembretes");
+        await showLocalNotification("Lembrete", r.title, "/crm/lembretes");
         await supabase.from("notifications").insert({
           user_id: r.user_id,
           title: "Lembrete",
           message: r.title,
           type: "info",
-          link: "/lembretes",
+          link: "/crm/lembretes",
         });
         await supabase.from("reminders").update({ notified: true }).eq("id", r.id);
 

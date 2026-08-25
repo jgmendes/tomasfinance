@@ -32,9 +32,9 @@ export default async function AdminOverviewPage() {
     }, 0);
 
   const cards = [
-    { label: "Usuários", href: "/admin/usuarios", icon: Users, desc: "Ver e gerenciar contas" },
-    { label: "KYC", href: "/admin/kyc", icon: ShieldCheck, desc: "Aprovar verificações" },
-    { label: "Assinaturas", href: "/admin/assinaturas", icon: Sparkles, desc: "Cobrança e planos" },
+    { label: "Usuários", href: "/crm/admin/usuarios", icon: Users, desc: "Ver e gerenciar contas" },
+    { label: "KYC", href: "/crm/admin/kyc", icon: ShieldCheck, desc: "Aprovar verificações" },
+    { label: "Assinaturas", href: "/crm/admin/assinaturas", icon: Sparkles, desc: "Cobrança e planos" },
   ];
 
   return (

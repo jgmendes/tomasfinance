@@ -1,6 +1,6 @@
 // Service Worker simples — cache de assets estáticos para experiência offline básica.
-const CACHE = "tomas-finance-v3";
-const ASSETS = ["/", "/dashboard", "/icon-192.png", "/icon-512.png"];
+const CACHE = "tomas-finance-v4";
+const ASSETS = ["/", "/crm/dashboard", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).catch(() => {}));
@@ -19,7 +19,7 @@ self.addEventListener("activate", (event) => {
 // Ao tocar na notificação, abre/foca o app na rota indicada.
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const url = (event.notification.data && event.notification.data.url) || "/dashboard";
+  const url = (event.notification.data && event.notification.data.url) || "/crm/dashboard";
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
       for (const client of list) {

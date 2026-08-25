@@ -53,7 +53,7 @@ export default function CadastroPage() {
         password,
         options: {
           data: { full_name: name.trim() },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/crm/auth/callback`,
         },
       });
       if (error) {
@@ -65,11 +65,11 @@ export default function CadastroPage() {
       }
       if (data.session) {
         toast.success("Conta criada com sucesso!");
-        router.push("/dashboard");
+        router.push("/crm/dashboard");
         router.refresh();
       } else {
         toast.success("Conta criada! Confira seu e-mail para confirmar o acesso.");
-        router.push("/login");
+        router.push("/crm/login");
       }
     } catch (err) {
       toast.error("Erro inesperado", {
@@ -154,7 +154,7 @@ export default function CadastroPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         Já tem conta?{" "}
-        <Link href="/login" className="text-primary hover:underline">Entrar</Link>
+        <Link href="/crm/login" className="text-primary hover:underline">Entrar</Link>
       </p>
     </div>
   );

@@ -80,7 +80,7 @@ GEMINI_API_KEY=sua-chave-gemini
 ```bash
 npm run dev
 ```
-1. Acesse `/cadastro` e crie sua conta.
+1. Acesse `/crm/cadastro` e crie sua conta. (O sistema financeiro inteiro vive sob `/crm` — a raiz `/` é a landing page pública.)
 2. Você será levado ao **Dashboard**. As categorias padrão são criadas automaticamente.
 3. Cadastre uma conta bancária, depois receitas/despesas e veja os gráficos e o CFO Virtual reagirem.
 

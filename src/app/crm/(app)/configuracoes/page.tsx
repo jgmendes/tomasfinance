@@ -135,10 +135,10 @@ export default function ConfiguracoesPage() {
   const initials = (fullName || email).slice(0, 2).toUpperCase();
 
   const shortcuts = [
-    { href: "/plano", label: "Meu Plano", icon: Sparkles, desc: "Assinatura e pagamento" },
-    { href: "/contas", label: "Contas", icon: Wallet, desc: "Bancos e carteiras" },
-    { href: "/cofre", label: "Cofre de Senhas", icon: KeyRound, desc: "Senhas criptografadas" },
-    { href: "/kyc", label: "Verificação (KYC)", icon: ShieldCheck, desc: "Identidade" },
+    { href: "/crm/plano", label: "Meu Plano", icon: Sparkles, desc: "Assinatura e pagamento" },
+    { href: "/crm/contas", label: "Contas", icon: Wallet, desc: "Bancos e carteiras" },
+    { href: "/crm/cofre", label: "Cofre de Senhas", icon: KeyRound, desc: "Senhas criptografadas" },
+    { href: "/crm/kyc", label: "Verificação (KYC)", icon: ShieldCheck, desc: "Identidade" },
   ];
 
   return (

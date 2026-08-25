@@ -42,7 +42,7 @@ export function Topbar({ email, fullName, avatarUrl, isAdmin = false }: TopbarPr
 
   async function logout() {
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/crm/login");
     router.refresh();
   }
 
@@ -66,7 +66,7 @@ export function Topbar({ email, fullName, avatarUrl, isAdmin = false }: TopbarPr
           </DialogContent>
         </Dialog>
         {/* Logo no mobile (substitui a saudação quando não há sidebar) */}
-        <Link href="/dashboard" className="lg:hidden">
+        <Link href="/crm/dashboard" className="lg:hidden">
           <Logo showText={false} />
         </Link>
         <h1 className="hidden text-sm font-medium text-muted-foreground sm:block">
@@ -76,7 +76,7 @@ export function Topbar({ email, fullName, avatarUrl, isAdmin = false }: TopbarPr
 
       <div className="flex items-center gap-0.5 sm:gap-1">
         <Button variant="ghost" size="icon" asChild title="Configurações">
-          <Link href="/configuracoes">
+          <Link href="/crm/configuracoes">
             <Settings className="h-5 w-5" />
           </Link>
         </Button>
@@ -102,12 +102,12 @@ export function Topbar({ email, fullName, avatarUrl, isAdmin = false }: TopbarPr
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/configuracoes">
+            <Link href="/crm/configuracoes">
               <User className="h-4 w-4" /> Perfil
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/configuracoes">
+            <Link href="/crm/configuracoes">
               <Settings className="h-4 w-4" /> Configurações
             </Link>
           </DropdownMenuItem>

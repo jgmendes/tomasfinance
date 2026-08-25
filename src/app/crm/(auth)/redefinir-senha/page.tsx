@@ -17,8 +17,8 @@ export default function RedefinirSenhaPage() {
 
   async function handleUpdate(e: React.FormEvent) {
     e.preventDefault();
-    if (password.length < 6) {
-      toast.error("A senha deve ter ao menos 6 caracteres");
+    if (password.length < 8) {
+      toast.error("A senha deve ter ao menos 8 caracteres");
       return;
     }
     setLoading(true);
@@ -29,7 +29,7 @@ export default function RedefinirSenhaPage() {
       return;
     }
     toast.success("Senha atualizada com sucesso!");
-    router.push("/dashboard");
+    router.push("/crm/dashboard");
     router.refresh();
   }
 
@@ -50,7 +50,7 @@ export default function RedefinirSenhaPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Mínimo 8 caracteres"
             required
           />
         </div>

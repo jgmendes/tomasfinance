@@ -24,14 +24,14 @@ export default function Verificar2faPage() {
       const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       // Já está em aal2 (verificado) → vai pro dashboard
       if (aal?.currentLevel === "aal2") {
-        router.replace("/dashboard");
+        router.replace("/crm/dashboard");
         return;
       }
       const { data } = await supabase.auth.mfa.listFactors();
       const totp = data?.totp?.find((f) => f.status === "verified");
       if (!totp) {
         // Não tem 2FA — não deveria estar aqui
-        router.replace("/dashboard");
+        router.replace("/crm/dashboard");
         return;
       }
       setFactorId(totp.id);
@@ -59,13 +59,13 @@ export default function Verificar2faPage() {
       return toast.error("Código inválido", { description: error.message });
     }
     toast.success("Verificado!");
-    router.replace("/dashboard");
+    router.replace("/crm/dashboard");
     router.refresh();
   }
 
   async function logout() {
     await supabase.auth.signOut();
-    router.replace("/login");
+    router.replace("/crm/login");
   }
 
   if (loading) {

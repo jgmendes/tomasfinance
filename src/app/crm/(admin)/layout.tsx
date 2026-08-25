@@ -16,7 +16,7 @@ export default async function AdminRootLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/admin-login");
+  if (!user) redirect("/crm/admin-login");
 
   const { data } = await supabase
     .from("profiles")
@@ -26,7 +26,7 @@ export default async function AdminRootLayout({
 
   // Somente administradores entram no painel
   if ((data as { role: string | null } | null)?.role !== "admin") {
-    redirect("/admin-login");
+    redirect("/crm/admin-login");
   }
 
   return (

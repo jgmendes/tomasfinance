@@ -124,10 +124,10 @@ export default async function Home() {
           </nav>
           <div className="flex items-center gap-2">
             <Button variant="ghost" asChild>
-              <Link href="/login">Entrar</Link>
+              <Link href="/crm/login">Entrar</Link>
             </Button>
             <Button asChild>
-              <Link href="/cadastro">Criar conta</Link>
+              <Link href="/crm/cadastro">Criar conta</Link>
             </Button>
           </div>
         </div>
@@ -158,12 +158,12 @@ export default async function Home() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
-                <Link href="/cadastro">
+                <Link href="/crm/cadastro">
                   Começar grátis <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/login">Já tenho conta</Link>
+                <Link href="/crm/login">Já tenho conta</Link>
               </Button>
             </div>
             <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
@@ -181,7 +181,7 @@ export default async function Home() {
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
                 <span className="ml-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <LogoMark className="h-3.5 w-3.5" /> app.tomasfinance.com/dashboard
+                  <LogoMark className="h-3.5 w-3.5" /> app.tomasfinance.com/crm/dashboard
                 </span>
               </div>
               <div className="grid gap-3 p-4 sm:grid-cols-2">
@@ -333,7 +333,7 @@ export default async function Home() {
                 </p>
               )}
               <Button size="lg" className="mt-6 w-full" asChild>
-                <Link href="/cadastro">
+                <Link href="/crm/cadastro">
                   Começar grátis <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -374,7 +374,7 @@ export default async function Home() {
             Crie sua conta em menos de um minuto e comece com 14 dias grátis.
           </p>
           <Button size="lg" variant="secondary" asChild>
-            <Link href="/cadastro">
+            <Link href="/crm/cadastro">
               Começar agora <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

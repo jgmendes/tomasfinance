@@ -25,7 +25,7 @@ export default async function AppLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
+  if (!user) redirect("/crm/login");
 
   const { data } = await supabase
     .from("profiles")
@@ -54,7 +54,7 @@ export default async function AppLayout({
     } = await supabase.auth.getSession();
     const aal = decodeAal(session?.access_token);
     if (aal && aal !== "aal2") {
-      redirect("/verificar-2fa");
+      redirect("/crm/verificar-2fa");
     }
   }
 
@@ -88,7 +88,7 @@ export default async function AppLayout({
         {/* Sidebar desktop (fixa) */}
         <aside className="hidden w-64 shrink-0 flex-col border-r bg-card lg:flex">
           <Link
-            href="/dashboard"
+            href="/crm/dashboard"
             className="flex h-16 shrink-0 items-center border-b px-5 text-[15px]"
           >
             <Logo />

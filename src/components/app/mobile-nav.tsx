@@ -12,11 +12,11 @@ import {
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
-  { label: "Início", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Receitas", href: "/receitas", icon: TrendingUp },
-  { label: "Despesas", href: "/despesas", icon: TrendingDown },
-  { label: "Metas", href: "/metas", icon: Target },
-  { label: "CFO", href: "/cfo", icon: Bot },
+  { label: "Início", href: "/crm/dashboard", icon: LayoutDashboard },
+  { label: "Receitas", href: "/crm/receitas", icon: TrendingUp },
+  { label: "Despesas", href: "/crm/despesas", icon: TrendingDown },
+  { label: "Metas", href: "/crm/metas", icon: Target },
+  { label: "CFO", href: "/crm/cfo", icon: Bot },
 ];
 
 export function MobileNav() {

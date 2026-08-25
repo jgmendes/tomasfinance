@@ -45,7 +45,7 @@ export async function showLocalNotification(
     body,
     icon: "/icon-192.png",
     badge: "/icon-192.png",
-    data: { url: link ?? "/dashboard" },
+    data: { url: link ?? "/crm/dashboard" },
   };
   try {
     const reg = await navigator.serviceWorker?.getRegistration();

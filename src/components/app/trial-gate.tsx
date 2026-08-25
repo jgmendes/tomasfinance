@@ -18,11 +18,11 @@ export function TrialGate({ blocked, trialDaysLeft }: Props) {
   const supabase = createClient();
 
   // Telas sempre liberadas (para conseguir pagar / sair)
-  const allowed = pathname.startsWith("/plano") || pathname.startsWith("/configuracoes");
+  const allowed = pathname.startsWith("/crm/plano") || pathname.startsWith("/crm/configuracoes");
 
   async function logout() {
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/crm/login");
   }
 
   if (blocked && !allowed) {
@@ -38,7 +38,7 @@ export function TrialGate({ blocked, trialDaysLeft }: Props) {
               Para continuar usando o Tomas Finance, assine um plano. Leva menos de 1 minuto via PIX.
             </p>
             <Button asChild size="lg" className="mt-6 w-full">
-              <Link href="/plano">
+              <Link href="/crm/plano">
                 <Sparkles className="h-4 w-4" /> Ver planos e assinar
               </Link>
             </Button>
@@ -54,7 +54,7 @@ export function TrialGate({ blocked, trialDaysLeft }: Props) {
   if (trialDaysLeft !== null && trialDaysLeft >= 0 && !blocked) {
     return (
       <Link
-        href="/plano"
+        href="/crm/plano"
         className="mb-4 flex items-center justify-between gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm transition-colors hover:bg-primary/10"
       >
         <span className="flex items-center gap-2">

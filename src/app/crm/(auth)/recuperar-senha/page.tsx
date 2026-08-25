@@ -19,7 +19,7 @@ export default function RecuperarSenhaPage() {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/redefinir-senha`,
+      redirectTo: `${window.location.origin}/crm/auth/callback?next=/crm/redefinir-senha`,
     });
     setLoading(false);
     if (error) {
@@ -65,7 +65,7 @@ export default function RecuperarSenhaPage() {
       )}
 
       <p className="text-center text-sm text-muted-foreground">
-        <Link href="/login" className="text-primary hover:underline">
+        <Link href="/crm/login" className="text-primary hover:underline">
           Voltar para o login
         </Link>
       </p>

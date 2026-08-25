@@ -30,7 +30,7 @@ export default function LoginPage() {
       try {
         const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
         if (aal?.currentLevel === "aal1" && aal?.nextLevel === "aal2") {
-          router.push("/verificar-2fa");
+          router.push("/crm/verificar-2fa");
           router.refresh();
           return;
         }
@@ -38,7 +38,7 @@ export default function LoginPage() {
         // ignora — segue para o dashboard
       }
       toast.success("Bem-vindo de volta!");
-      router.push("/dashboard");
+      router.push("/crm/dashboard");
       router.refresh();
     } catch (err) {
       toast.error("Erro ao entrar", {
@@ -74,7 +74,7 @@ export default function LoginPage() {
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Senha</Label>
             <Link
-              href="/recuperar-senha"
+              href="/crm/recuperar-senha"
               className="text-xs text-primary hover:underline"
             >
               Esqueceu a senha?
@@ -97,7 +97,7 @@ export default function LoginPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         Não tem conta?{" "}
-        <Link href="/cadastro" className="text-primary hover:underline">
+        <Link href="/crm/cadastro" className="text-primary hover:underline">
           Criar conta
         </Link>
       </p>
