@@ -31,7 +31,10 @@ export default function ConfiguracoesPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -94,10 +97,30 @@ export default function ConfiguracoesPage() {
 
   async function changePassword(e: React.FormEvent) {
     e.preventDefault();
-    if (newPassword.length < 6) return toast.error("Mínimo 6 caracteres");
+    if (!currentPassword) return toast.error("Informe sua senha atual");
+    if (newPassword.length < 8) return toast.error("A nova senha deve ter ao menos 8 caracteres");
+    if (newPassword !== confirmPassword) return toast.error("As senhas não conferem");
+    if (newPassword === currentPassword) return toast.error("A nova senha precisa ser diferente da atual");
+
+    setChangingPassword(true);
+
+    // Confirma a senha atual antes de trocar (evita que alguém com a sessão
+    // aberta, mas sem saber a senha, consiga assumir a conta).
+    const { error: reauthError } = await supabase.auth.signInWithPassword({
+      email,
+      password: currentPassword,
+    });
+    if (reauthError) {
+      setChangingPassword(false);
+      return toast.error("Senha atual incorreta");
+    }
+
     const { error } = await supabase.auth.updateUser({ password: newPassword });
-    if (error) return toast.error("Erro", { description: error.message });
+    setChangingPassword(false);
+    if (error) return toast.error("Erro ao alterar senha", { description: error.message });
+    setCurrentPassword("");
     setNewPassword("");
+    setConfirmPassword("");
     toast.success("Senha alterada!");
   }
 
@@ -197,18 +220,39 @@ export default function ConfiguracoesPage() {
           <CardTitle>Segurança</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <form onSubmit={changePassword} className="space-y-4">
+          <form onSubmit={changePassword} className="max-w-sm space-y-4">
+            <div className="grid gap-2">
+              <Label>Senha atual</Label>
+              <Input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Sua senha atual"
+                autoComplete="current-password"
+              />
+            </div>
             <div className="grid gap-2">
               <Label>Nova senha</Label>
               <Input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
-                className="max-w-sm"
+                placeholder="Mínimo 8 caracteres"
+                autoComplete="new-password"
               />
             </div>
-            <Button type="submit" variant="outline">
+            <div className="grid gap-2">
+              <Label>Confirmar nova senha</Label>
+              <Input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Repita a nova senha"
+                autoComplete="new-password"
+              />
+            </div>
+            <Button type="submit" variant="outline" disabled={changingPassword}>
+              {changingPassword && <Loader2 className="h-4 w-4 animate-spin" />}
               Alterar senha
             </Button>
           </form>
