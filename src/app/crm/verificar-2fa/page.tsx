@@ -1,37 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { LogoMark } from "@/components/app/logo";
 import { Loader2, ShieldCheck } from "lucide-react";
 
-export default function Verificar2faPage() {
+function Verificar2faForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
   const [factorId, setFactorId] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
 
+  const next =
+    searchParams.get("next")?.startsWith("/") ? searchParams.get("next")! : "/crm/dashboard";
+
   useEffect(() => {
     (async () => {
       const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-      // Já está em aal2 (verificado) → vai pro dashboard
+      // Já está em aal2 (verificado) → vai direto pro destino
       if (aal?.currentLevel === "aal2") {
-        router.replace("/crm/dashboard");
+        router.replace(next);
         return;
       }
       const { data } = await supabase.auth.mfa.listFactors();
       const totp = data?.totp?.find((f) => f.status === "verified");
       if (!totp) {
         // Não tem 2FA — não deveria estar aqui
-        router.replace("/crm/dashboard");
+        router.replace(next);
         return;
       }
       setFactorId(totp.id);
@@ -59,7 +62,7 @@ export default function Verificar2faPage() {
       return toast.error("Código inválido", { description: error.message });
     }
     toast.success("Verificado!");
-    router.replace("/crm/dashboard");
+    router.replace(next);
     router.refresh();
   }
 
@@ -113,5 +116,13 @@ export default function Verificar2faPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function Verificar2faPage() {
+  return (
+    <Suspense fallback={null}>
+      <Verificar2faForm />
+    </Suspense>
   );
 }

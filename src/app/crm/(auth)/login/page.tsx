@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,12 +10,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // Permite voltar para onde o usuário estava tentando ir (ex.: /intermediacao/*),
+  // já que o login é compartilhado entre os produtos. Só aceita caminhos internos.
+  const next =
+    searchParams.get("next")?.startsWith("/") ? searchParams.get("next")! : "/crm/dashboard";
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -30,15 +36,15 @@ export default function LoginPage() {
       try {
         const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
         if (aal?.currentLevel === "aal1" && aal?.nextLevel === "aal2") {
-          router.push("/crm/verificar-2fa");
+          router.push(`/crm/verificar-2fa?next=${encodeURIComponent(next)}`);
           router.refresh();
           return;
         }
       } catch {
-        // ignora — segue para o dashboard
+        // ignora — segue para o destino
       }
       toast.success("Bem-vindo de volta!");
-      router.push("/crm/dashboard");
+      router.push(next);
       router.refresh();
     } catch (err) {
       toast.error("Erro ao entrar", {
@@ -102,5 +108,13 @@ export default function LoginPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

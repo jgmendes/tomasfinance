@@ -57,10 +57,16 @@ export async function updateSession(request: NextRequest) {
     pathname === "/sw.js" ||
     pathname.startsWith("/icon-");
 
-  // Não autenticado tentando acessar rota privada (dentro de /crm) -> login
-  if (!user && pathname.startsWith("/crm") && !isAuthRoute && !isPublicAsset) {
+  // Rotas privadas protegidas por este middleware: o app financeiro (/crm) e o
+  // produto de intermediação (/intermediacao) — ambos usam o mesmo login.
+  const isProtectedNamespace =
+    pathname.startsWith("/crm") || pathname.startsWith("/intermediacao");
+
+  // Não autenticado tentando acessar rota privada -> login (preserva destino em ?next=)
+  if (!user && isProtectedNamespace && !isAuthRoute && !isPublicAsset) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/crm/login";
+    redirectUrl.search = `?next=${encodeURIComponent(pathname + request.nextUrl.search)}`;
     return NextResponse.redirect(redirectUrl);
   }
 

@@ -39,6 +39,35 @@ export type TaxRegime =
 export type UsageType = "pessoal" | "empresarial" | "ambos";
 export type ReminderRecurrence = "daily";
 
+// ---- Tomasin Intermediações (produto separado, mesmo login/banco) ----
+export type NegotiationStatus =
+  | "solicitacao_recebida"
+  | "em_analise"
+  | "negociacao"
+  | "contraproposta_enviada"
+  | "contraproposta_recebida"
+  | "aprovada"
+  | "recusada"
+  | "cancelada";
+export type NegotiationAuthorRole = "admin" | "parceiro" | "cliente";
+export type NegotiationEventType =
+  | "proposta_inicial"
+  | "contraproposta"
+  | "mensagem"
+  | "aprovacao"
+  | "recusa"
+  | "cancelamento";
+
+/** Termos livres de uma condição/proposta — os campos variam por negociação. */
+export type NegotiationTerms = {
+  taxa?: string;
+  volume?: number;
+  prazo_meses?: number;
+  condicao_pagamento?: string;
+  custo_estimado?: string;
+  [key: string]: string | number | undefined;
+};
+
 type Timestamps = { created_at: string; updated_at: string | null };
 
 export type Profile = Timestamps & {
@@ -338,6 +367,28 @@ export type Notification = {
   created_at: string;
 };
 
+export type Negotiation = Timestamps & {
+  id: string;
+  number: number;
+  user_id: string;
+  client_company_name: string;
+  necessidade: string;
+  condicao_atual: NegotiationTerms | null;
+  status: NegotiationStatus;
+  condicao_final: NegotiationTerms | null;
+};
+
+export type NegotiationEvent = {
+  id: string;
+  negotiation_id: string;
+  author_role: NegotiationAuthorRole;
+  event_type: NegotiationEventType;
+  terms: NegotiationTerms | null;
+  message: string | null;
+  created_by: string;
+  created_at: string;
+};
+
 type TableDef<T> = {
   Row: T;
   Insert: Partial<T>;
@@ -371,6 +422,8 @@ export type Database = {
       plans: TableDef<Plan>;
       billing_subscriptions: TableDef<BillingSubscription>;
       charges: TableDef<Charge>;
+      negotiations: TableDef<Negotiation>;
+      negotiation_events: TableDef<NegotiationEvent>;
     };
     Views: Record<string, never>;
     Functions: {
