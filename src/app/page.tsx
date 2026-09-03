@@ -1,55 +1,71 @@
 import Link from "next/link";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Logo, LogoMark } from "@/components/app/logo";
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/config";
-import { formatCurrency } from "@/lib/utils";
-import type { Database, Plan } from "@/lib/database.types";
 import {
   ArrowRight,
-  BarChart3,
-  Bot,
   Building2,
   Check,
-  CreditCard,
+  ClipboardList,
   FileCheck,
-  Gem,
+  Gift,
   Handshake,
   KeyRound,
   Lock,
+  MessagesSquare,
   Percent,
-  PiggyBank,
   ShieldCheck,
+  Sparkles,
+  ThumbsUp,
   TrendingDown,
   TrendingUp,
   Users,
   Wallet,
 } from "lucide-react";
 
-// Dados públicos (plano ativo) — sem sessão de usuário, cacheável.
-export const revalidate = 3600;
+const LANDING_TITLE = "Tomasin Intermediações de Negócios";
+const LANDING_DESCRIPTION =
+  "Negociamos as melhores condições pro seu negócio — taxas, fornecedores, gateways de pagamento e conexões comerciais. De bônus, acesso grátis ao Tomas Finance, nosso CRM financeiro.";
 
-const BASE_NAV = [
-  { href: "#produto", label: "Produto" },
-  { href: "#negocios", label: "Negócios" },
+export const metadata: Metadata = {
+  title: LANDING_TITLE,
+  description: LANDING_DESCRIPTION,
+  keywords: [
+    "intermediação de negócios",
+    "negociação de taxas",
+    "redução de taxa de gateway",
+    "consultoria empresarial",
+    "CRM financeiro grátis",
+    "network empresarial",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Tomasin Intermediações",
+    title: LANDING_TITLE,
+    description: LANDING_DESCRIPTION,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: LANDING_TITLE,
+    description: LANDING_DESCRIPTION,
+  },
+};
+
+const NAV = [
+  { href: "#intermediacao", label: "Intermediação" },
+  { href: "#como-funciona", label: "Como funciona" },
+  { href: "#crm", label: "CRM grátis" },
+  { href: "#faq", label: "FAQ" },
 ];
-const PRECO_NAV = { href: "#preco", label: "Preço" };
-const FAQ_NAV = { href: "#faq", label: "FAQ" };
 
-const features = [
-  { icon: BarChart3, title: "Dashboard completo", desc: "Saldo, receitas, despesas, lucro e fluxo de caixa em tempo real, num só painel." },
-  { icon: Bot, title: "CFO Virtual com IA", desc: "Insights diários, previsões de caixa e cálculo de runway — pergunte em português." },
-  { icon: CreditCard, title: "Cartões & contas", desc: "Múltiplas contas, cartões, limites de crédito e parcelamentos sob controle." },
-  { icon: PiggyBank, title: "Metas & investimentos", desc: "Acompanhe metas financeiras e a rentabilidade real da sua carteira." },
-  { icon: TrendingUp, title: "Multi-empresas", desc: "Cadastre as empresas das quais você é dono, cada uma com seu próprio caixa." },
-  { icon: FileCheck, title: "Lançamentos rastreáveis", desc: "Motivo, nota fiscal e beneficiário em cada valor — histórico pronto pra auditoria." },
-];
-
-const trust = [
-  { icon: ShieldCheck, label: "Isolamento por usuário (RLS)" },
-  { icon: FileCheck, label: "Trilha de auditoria jurídica" },
-  { icon: Lock, label: "Cofre com criptografia" },
-  { icon: KeyRound, label: "Autenticação em 2 fatores" },
+const passos = [
+  { icon: ClipboardList, title: "Solicitação", desc: "Você conta o que precisa negociar — taxas, fornecedores, condições comerciais." },
+  { icon: Handshake, title: "Negociação", desc: "Negociamos com o parceiro/terceiro em seu nome, registrando cada lance." },
+  { icon: ThumbsUp, title: "Aprovação", desc: "Você recebe a proposta final e decide: aceitar, contrapropor ou recusar." },
+  { icon: TrendingUp, title: "Resultado", desc: "Condição fechada, documentada do início ao fim — sem letra miúda." },
 ];
 
 const negocios = [
@@ -59,44 +75,42 @@ const negocios = [
   { icon: Users, title: "Network", desc: "Conectamos pessoas pra gerar oportunidades reais de relacionamento e negócio." },
 ];
 
+const trust = [
+  { icon: ShieldCheck, label: "Isolamento por usuário (RLS)" },
+  { icon: FileCheck, label: "Histórico completo de cada negociação" },
+  { icon: Lock, label: "Cofre com criptografia" },
+  { icon: KeyRound, label: "Autenticação em 2 fatores" },
+];
+
+const crmFeatures = [
+  "Dashboard completo de receitas, despesas e patrimônio",
+  "Multi-empresas, cada uma com seu próprio caixa",
+  "CFO Virtual com IA pra tirar dúvidas financeiras",
+  "Lançamentos com motivo, nota fiscal e beneficiário",
+];
+
 const faq = [
   {
-    q: "Preciso de cartão de crédito para testar?",
-    a: "Não. Você tem 14 dias grátis pra usar o sistema por completo, sem precisar cadastrar cartão.",
+    q: "Como funciona a remuneração da Tomasin na intermediação?",
+    a: "Sem mensalidade fixa. Nossa remuneração é definida por negociação, combinada com você antes de fechar qualquer condição — e sempre separada do valor do negócio em si (a taxa que negociamos com o terceiro é uma coisa, o que você paga pelo nosso serviço é outra, documentado à parte).",
   },
   {
-    q: "Meus dados financeiros ficam seguros?",
-    a: "Sim. Cada usuário só acessa os próprios dados (RLS no banco), há autenticação em 2 fatores opcional, cofre com criptografia pra informações sensíveis e uma trilha de auditoria automática em todo lançamento.",
+    q: "O CRM financeiro (Tomas Finance) é mesmo grátis?",
+    a: "Sim. É nosso jeito de te dar controle financeiro de verdade enquanto cuidamos das suas negociações — sem custo.",
+  },
+  {
+    q: "Preciso ter uma negociação em andamento pra usar o CRM?",
+    a: "Não. Você pode criar conta e usar o Tomas Finance normalmente. Se quiser, pode solicitar uma intermediação a qualquer momento.",
+  },
+  {
+    q: "Meus dados ficam seguros?",
+    a: "Sim. Cada cliente só acessa os próprios dados e negociações (RLS no banco), há autenticação em 2 fatores opcional, cofre com criptografia e um histórico auditável de cada lançamento e cada lance de negociação.",
   },
   {
     q: "Posso usar para mais de uma empresa?",
-    a: "Sim. Cadastre quantas empresas você for dono e acompanhe o fluxo de caixa, receitas e despesas de cada uma separadamente, além do seu financeiro pessoal.",
-  },
-  {
-    q: "O que é a parte de intermediação de negócios e taxas?",
-    a: "Além do sistema, também ajudamos a negociar taxas de gateways de pagamento e conectamos empresas, compradores e oportunidades de network.",
-  },
-  {
-    q: "Posso cancelar quando quiser?",
-    a: "Sim, sem fidelidade. Você pode cancelar a assinatura quando quiser.",
+    a: "Sim, tanto no CRM (cadastre quantas empresas for dono) quanto nas negociações (cada uma com seu próprio histórico).",
   },
 ];
-
-async function getActivePlan(): Promise<Plan | null> {
-  try {
-    const supabase = createSupabaseClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const { data } = await supabase
-      .from("plans")
-      .select("*")
-      .eq("active", true)
-      .order("sort")
-      .limit(1)
-      .maybeSingle();
-    return data as Plan | null;
-  } catch {
-    return null;
-  }
-}
 
 function SectionEyebrow({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }) {
   return (
@@ -106,17 +120,14 @@ function SectionEyebrow({ icon: Icon, children }: { icon: React.ElementType; chi
   );
 }
 
-export default async function Home() {
-  const plan = await getActivePlan();
-  const nav = [...BASE_NAV, ...(plan ? [PRECO_NAV] : []), FAQ_NAV];
-
+export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
         <div className="container flex h-16 items-center justify-between">
           <Logo className="text-lg" />
           <nav className="hidden items-center gap-7 text-sm text-muted-foreground lg:flex">
-            {nav.map((n) => (
+            {NAV.map((n) => (
               <a key={n.href} href={n.href} className="transition-colors hover:text-foreground">
                 {n.label}
               </a>
@@ -133,15 +144,15 @@ export default async function Home() {
         </div>
       </header>
 
-      {/* Hero */}
-      <section id="produto" className="bg-grid-fade scroll-mt-16">
+      {/* Hero — Intermediação */}
+      <section id="intermediacao" className="bg-grid-fade scroll-mt-16">
         <div className="container grid gap-14 py-20 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:py-28">
           <div>
-            <SectionEyebrow icon={Bot}>Seu CFO Virtual com Inteligência Artificial</SectionEyebrow>
+            <SectionEyebrow icon={Handshake}>Tomasin Intermediações de Negócios</SectionEyebrow>
             <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
-              Controle financeiro{" "}
+              Negociamos as{" "}
               <span className="relative inline-block text-primary">
-                inteligente
+                melhores condições
                 <svg
                   viewBox="0 0 200 12"
                   className="absolute -bottom-2 left-0 h-3 w-full text-primary/50"
@@ -151,15 +162,16 @@ export default async function Home() {
                   <path d="M2 9 C 50 2, 150 2, 198 9" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round" />
                 </svg>
               </span>{" "}
-              pra você e suas empresas.
+              pro seu negócio.
             </h1>
             <p className="mt-6 max-w-lg text-lg text-muted-foreground">
-              Receitas, despesas, contas, cartões, metas, investimentos e patrimônio — tudo em um só lugar, com insights automáticos de IA.
+              Taxas, fornecedores, gateways de pagamento, conexões comerciais — negociamos por você, com histórico
+              completo de cada etapa. E de bônus, você ganha acesso grátis ao nosso CRM financeiro.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" asChild>
                 <Link href="/crm/cadastro">
-                  Começar grátis <ArrowRight className="h-4 w-4" />
+                  Solicitar negociação <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
@@ -167,13 +179,13 @@ export default async function Home() {
               </Button>
             </div>
             <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-500" /> 14 dias grátis</span>
-              <span className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-500" /> Sem cartão de crédito</span>
-              <span className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-500" /> Cancele quando quiser</span>
+              <span className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-500" /> Sem mensalidade fixa</span>
+              <span className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-500" /> Atendimento personalizado</span>
+              <span className="flex items-center gap-1.5"><Check className="h-3.5 w-3.5 text-emerald-500" /> CRM financeiro incluso, grátis</span>
             </div>
           </div>
 
-          {/* Mockup visual do produto */}
+          {/* Mockup visual: negociação real */}
           <div className="relative">
             <div className="rounded-2xl border border-primary/20 bg-secondary p-2 shadow-2xl shadow-primary/20 sm:p-3">
               <div className="flex items-center gap-1.5 border-b border-white/10 px-3 py-2.5">
@@ -181,34 +193,30 @@ export default async function Home() {
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
                 <span className="ml-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <LogoMark className="h-3.5 w-3.5" /> app.tomasfinance.com/crm/dashboard
+                  <LogoMark className="h-3.5 w-3.5" /> tomasin.com/intermediacao/negociacoes/000152
                 </span>
               </div>
-              <div className="grid gap-3 p-4 sm:grid-cols-2">
-                <div className="rounded-xl border bg-card p-4 shadow-sm">
-                  <Wallet className="h-4 w-4 text-primary" />
-                  <p className="mt-2 text-xs text-muted-foreground">Saldo total</p>
-                  <p className="text-lg font-bold">R$ 84.320</p>
+              <div className="space-y-3 p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-xs text-muted-foreground">#000152 · ABC LTDA</p>
+                    <p className="text-sm font-semibold">Redução de taxa</p>
+                  </div>
+                  <Badge className="bg-violet-500/15 text-violet-600 dark:text-violet-400">Contraproposta enviada</Badge>
                 </div>
-                <div className="rounded-xl border bg-card p-4 shadow-sm">
-                  <TrendingUp className="h-4 w-4 text-emerald-500" />
-                  <p className="mt-2 text-xs text-muted-foreground">Receitas do mês</p>
-                  <p className="text-lg font-bold text-emerald-500">R$ 32.150</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-xl border bg-card p-3">
+                    <p className="text-xs text-muted-foreground">Condição atual</p>
+                    <p className="mt-1 text-base font-bold">4,99%</p>
+                  </div>
+                  <div className="rounded-xl border bg-card p-3">
+                    <p className="text-xs text-muted-foreground">Proposta atual</p>
+                    <p className="mt-1 text-base font-bold text-emerald-500">3,15%</p>
+                  </div>
                 </div>
-                <div className="rounded-xl border bg-card p-4 shadow-sm">
-                  <TrendingDown className="h-4 w-4 text-red-500" />
-                  <p className="mt-2 text-xs text-muted-foreground">Despesas do mês</p>
-                  <p className="text-lg font-bold text-red-500">R$ 18.940</p>
-                </div>
-                <div className="rounded-xl border bg-card p-4 shadow-sm">
-                  <Gem className="h-4 w-4 text-primary" />
-                  <p className="mt-2 text-xs text-muted-foreground">Patrimônio</p>
-                  <p className="text-lg font-bold">R$ 212.780</p>
-                </div>
-                <div className="flex items-end gap-1.5 rounded-xl border bg-card p-4 shadow-sm sm:col-span-2">
-                  {[38, 52, 44, 61, 49, 70, 58, 76, 64, 82, 71, 90].map((h, i) => (
-                    <div key={i} className="flex-1 rounded-t-sm bg-gradient-to-t from-primary/50 to-primary" style={{ height: `${h}px` }} />
-                  ))}
+                <div className="rounded-xl border bg-card p-3 text-xs">
+                  <p className="text-muted-foreground">14:20 — <span className="font-medium text-foreground">Parceiro</span>: Proposta inicial 3,49%.</p>
+                  <p className="mt-1 text-muted-foreground">15:25 — <span className="font-medium text-foreground">Tomasin</span>: Contraproposta 3,15%.</p>
                 </div>
               </div>
             </div>
@@ -216,11 +224,11 @@ export default async function Home() {
             {/* Chip flutuante */}
             <div className="absolute -bottom-5 -left-5 hidden items-center gap-2 rounded-xl border border-primary/20 bg-card px-4 py-3 shadow-xl sm:flex">
               <div className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-500/10">
-                <FileCheck className="h-4 w-4 text-emerald-500" />
+                <Gift className="h-4 w-4 text-emerald-500" />
               </div>
               <div className="text-xs">
-                <p className="font-semibold">Lançamento auditado</p>
-                <p className="text-muted-foreground">Motivo · NF · beneficiário</p>
+                <p className="font-semibold">CRM financeiro incluso</p>
+                <p className="text-muted-foreground">Grátis pra todo cliente Tomasin</p>
               </div>
             </div>
           </div>
@@ -238,31 +246,31 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Features — lista numerada */}
-      <section className="container py-20">
+      {/* Como funciona */}
+      <section id="como-funciona" className="scroll-mt-16 container py-20">
         <div className="max-w-lg">
-          <SectionEyebrow icon={BarChart3}>O produto</SectionEyebrow>
+          <SectionEyebrow icon={MessagesSquare}>O processo</SectionEyebrow>
           <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Tudo que você precisa, em um só lugar
+            Como funciona uma negociação
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Da conta pessoal ao caixa de várias empresas, com dados sempre isolados e rastreáveis.
+            Do pedido até o resultado, tudo documentado — sem depender de e-mail perdido ou ligação sem registro.
           </p>
         </div>
 
         <div className="mt-12 divide-y divide-border border-y">
-          {features.map((f, i) => (
-            <div key={f.title} className="grid gap-4 py-8 sm:grid-cols-[3rem_1fr] sm:items-start sm:gap-8">
+          {passos.map((p, i) => (
+            <div key={p.title} className="grid gap-4 py-8 sm:grid-cols-[3rem_1fr] sm:items-start sm:gap-8">
               <span className="font-display text-3xl font-bold text-muted-foreground/25">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <div className="flex items-start gap-4">
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-primary/10">
-                  <f.icon className="h-5 w-5 text-primary" />
+                  <p.icon className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">{f.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
+                  <h3 className="font-semibold">{p.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{p.desc}</p>
                 </div>
               </div>
             </div>
@@ -270,16 +278,16 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Negócios & Network — faixa com fundo diferenciado */}
-      <section id="negocios" className="scroll-mt-16 border-y bg-card/40">
+      {/* O que negociamos */}
+      <section className="border-y bg-card/40">
         <div className="container py-20">
           <div className="max-w-lg">
-            <SectionEyebrow icon={Handshake}>Mais que um sistema</SectionEyebrow>
+            <SectionEyebrow icon={Handshake}>O que negociamos</SectionEyebrow>
             <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-              Também cuidamos dos seus negócios
+              Sua rede de negócios, mais forte
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Ajudamos nossos clientes a comprar melhor e conseguir as melhores taxas — e a fazer as conexões certas.
+              Ajudamos nossos clientes a comprar melhor e conseguir as melhores condições — e a fazer as conexões certas.
             </p>
           </div>
 
@@ -297,51 +305,69 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Preço */}
-      {plan && (
-        <section id="preco" className="scroll-mt-16 container py-20">
-          <div className="grid gap-10 rounded-2xl border bg-card p-8 sm:p-12 lg:grid-cols-2 lg:items-center">
-            <div>
-              <SectionEyebrow icon={Gem}>Preço</SectionEyebrow>
-              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                Um plano simples, sem pegadinha
-              </h2>
-              <p className="mt-3 max-w-sm text-muted-foreground">
-                Comece grátis por 14 dias. Depois, um único plano com tudo incluso — sem letra miúda.
-              </p>
-              {plan.features && plan.features.length > 0 && (
-                <ul className="mt-6 grid gap-2.5 text-sm sm:grid-cols-2">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 shrink-0 text-emerald-500" /> {f}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+      {/* CRM grátis — Tomas Finance */}
+      <section id="crm" className="scroll-mt-16 container py-20">
+        <div className="grid gap-10 rounded-2xl border bg-card p-8 sm:p-12 lg:grid-cols-2 lg:items-center">
+          <div>
+            <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+              <Gift className="h-3.5 w-3.5" /> Grátis para todo cliente Tomasin
+            </Badge>
+            <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+              Tomas Finance: seu CRM financeiro, de graça
+            </h2>
+            <p className="mt-3 max-w-sm text-muted-foreground">
+              Enquanto negociamos por você, use o Tomas Finance pra ter controle total das suas finanças pessoais e
+              das suas empresas — sem pagar nada por isso.
+            </p>
+            <ul className="mt-6 grid gap-2.5 text-sm">
+              {crmFeatures.map((f) => (
+                <li key={f} className="flex items-center gap-2">
+                  <Check className="h-4 w-4 shrink-0 text-emerald-500" /> {f}
+                </li>
+              ))}
+            </ul>
+            <Button size="lg" className="mt-6" asChild>
+              <Link href="/crm/cadastro">
+                Criar conta grátis <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
 
-            <div className="rounded-xl border bg-background p-8 text-center">
-              <p className="text-sm font-medium text-muted-foreground">{plan.name}</p>
-              <div className="mt-2">
-                <span className="font-display text-5xl font-bold">{formatCurrency(plan.price_cents / 100)}</span>
-                <span className="text-sm text-muted-foreground">/mês</span>
+          {/* Mockup visual do CRM */}
+          <div className="rounded-xl border bg-background p-2 shadow-lg">
+            <div className="flex items-center gap-1.5 border-b px-3 py-2.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
+              <span className="ml-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <LogoMark className="h-3.5 w-3.5" /> tomasin.com/crm/dashboard
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 p-4">
+              <div className="rounded-xl border bg-card p-3">
+                <Wallet className="h-4 w-4 text-primary" />
+                <p className="mt-2 text-xs text-muted-foreground">Saldo total</p>
+                <p className="text-base font-bold">R$ 84.320</p>
               </div>
-              {plan.price_annual_cents > 0 && (
-                <p className="mt-2 text-sm text-emerald-500">
-                  ou {formatCurrency(plan.price_annual_cents / 100)}/ano — equivale a{" "}
-                  {formatCurrency(plan.price_annual_cents / 12 / 100)}/mês
-                </p>
-              )}
-              <Button size="lg" className="mt-6 w-full" asChild>
-                <Link href="/crm/cadastro">
-                  Começar grátis <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <p className="mt-2 text-xs text-muted-foreground">14 dias grátis · cancele quando quiser</p>
+              <div className="rounded-xl border bg-card p-3">
+                <TrendingUp className="h-4 w-4 text-emerald-500" />
+                <p className="mt-2 text-xs text-muted-foreground">Receitas do mês</p>
+                <p className="text-base font-bold text-emerald-500">R$ 32.150</p>
+              </div>
+              <div className="rounded-xl border bg-card p-3">
+                <TrendingDown className="h-4 w-4 text-red-500" />
+                <p className="mt-2 text-xs text-muted-foreground">Despesas do mês</p>
+                <p className="text-base font-bold text-red-500">R$ 18.940</p>
+              </div>
+              <div className="rounded-xl border bg-card p-3">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <p className="mt-2 text-xs text-muted-foreground">CFO Virtual</p>
+                <p className="text-base font-bold">Sempre online</p>
+              </div>
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* FAQ */}
       <section id="faq" className="scroll-mt-16 border-t">
@@ -368,10 +394,10 @@ export default async function Home() {
       <section className="bg-primary">
         <div className="container flex flex-col items-center gap-6 py-20 text-center text-primary-foreground">
           <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Pronto para organizar suas finanças?
+            Pronto para negociar melhor?
           </h2>
           <p className="max-w-md text-primary-foreground/80">
-            Crie sua conta em menos de um minuto e comece com 14 dias grátis.
+            Crie sua conta em menos de um minuto, solicite uma negociação e ganhe acesso grátis ao Tomas Finance.
           </p>
           <Button size="lg" variant="secondary" asChild>
             <Link href="/crm/cadastro">
@@ -385,8 +411,9 @@ export default async function Home() {
         <div className="container flex flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
           <Logo className="text-sm" />
           <span className="text-center">
-            © {new Date().getFullYear()} Tomas Finance · CNPJ 68.248.717/0001-90
+            © {new Date().getFullYear()} Tomasin Intermediações de Negócios LTDA · CNPJ 68.248.717/0001-90
           </span>
+          <span className="text-xs text-muted-foreground/70">Tomas Finance é um produto Tomasin.</span>
         </div>
       </footer>
     </div>

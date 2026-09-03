@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Tomas Finance — Seu CFO Virtual";
+export const alt = "Tomasin Intermediações de Negócios";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -37,15 +37,15 @@ export default async function Image() {
           >
             T
           </div>
-          <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: -0.5 }}>Tomas Finance</div>
+          <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: -0.5 }}>Tomasin Intermediações</div>
         </div>
 
         <div style={{ display: "flex", marginTop: 56, fontSize: 62, fontWeight: 800, lineHeight: 1.15, maxWidth: 980 }}>
-          Controle financeiro inteligente para você e suas empresas
+          Negociamos as melhores condições pro seu negócio
         </div>
 
         <div style={{ display: "flex", marginTop: 28, fontSize: 28, color: "#c4b5fd", maxWidth: 860 }}>
-          Receitas, despesas, patrimônio e CFO Virtual com IA — tudo em um só lugar.
+          Taxas, fornecedores e conexões comerciais — com CRM financeiro grátis incluso.
         </div>
       </div>
     ),
