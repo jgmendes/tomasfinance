@@ -65,7 +65,7 @@ export default function CadastroPage() {
       }
       if (data.session) {
         toast.success("Conta criada com sucesso!");
-        router.push("/crm/dashboard");
+        router.push("/intermediacao/negociacoes");
         router.refresh();
       } else {
         toast.success("Conta criada! Confira seu e-mail para confirmar o acesso.");

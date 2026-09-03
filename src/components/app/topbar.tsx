@@ -19,7 +19,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { NotificationBell } from "./notification-bell";
 import { Logo } from "./logo";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { LogOut, Menu, Settings, User } from "lucide-react";
+import { Handshake, LogOut, Menu, Settings, User } from "lucide-react";
 
 interface TopbarProps {
   email: string;
@@ -75,6 +75,11 @@ export function Topbar({ email, fullName, avatarUrl, isAdmin = false }: TopbarPr
       </div>
 
       <div className="flex items-center gap-0.5 sm:gap-1">
+        <Button size="sm" asChild className="mr-1">
+          <Link href="/intermediacao/negociacoes">
+            <Handshake className="h-4 w-4" /> <span className="hidden sm:inline">Negociações</span>
+          </Link>
+        </Button>
         <Button variant="ghost" size="icon" asChild title="Configurações">
           <Link href="/crm/configuracoes">
             <Settings className="h-5 w-5" />

@@ -20,7 +20,7 @@ function Verificar2faForm() {
   const [busy, setBusy] = useState(false);
 
   const next =
-    searchParams.get("next")?.startsWith("/") ? searchParams.get("next")! : "/crm/dashboard";
+    searchParams.get("next")?.startsWith("/") ? searchParams.get("next")! : "/intermediacao/negociacoes";
 
   useEffect(() => {
     (async () => {

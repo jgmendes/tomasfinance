@@ -16,12 +16,9 @@ import {
   MessagesSquare,
   Percent,
   ShieldCheck,
-  Sparkles,
   ThumbsUp,
-  TrendingDown,
   TrendingUp,
   Users,
-  Wallet,
 } from "lucide-react";
 
 const LANDING_TITLE = "Tomasin Intermediações de Negócios";
@@ -80,13 +77,6 @@ const trust = [
   { icon: FileCheck, label: "Histórico completo de cada negociação" },
   { icon: Lock, label: "Cofre com criptografia" },
   { icon: KeyRound, label: "Autenticação em 2 fatores" },
-];
-
-const crmFeatures = [
-  "Dashboard completo de receitas, despesas e patrimônio",
-  "Multi-empresas, cada uma com seu próprio caixa",
-  "CFO Virtual com IA pra tirar dúvidas financeiras",
-  "Lançamentos com motivo, nota fiscal e beneficiário",
 ];
 
 const faq = [
@@ -305,67 +295,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CRM grátis — Tomas Finance */}
-      <section id="crm" className="scroll-mt-16 container py-20">
-        <div className="grid gap-10 rounded-2xl border bg-card p-8 sm:p-12 lg:grid-cols-2 lg:items-center">
-          <div>
-            <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-              <Gift className="h-3.5 w-3.5" /> Grátis para todo cliente Tomasin
-            </Badge>
-            <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-              Tomas Finance: seu CRM financeiro, de graça
-            </h2>
-            <p className="mt-3 max-w-sm text-muted-foreground">
-              Enquanto negociamos por você, use o Tomas Finance pra ter controle total das suas finanças pessoais e
-              das suas empresas — sem pagar nada por isso.
-            </p>
-            <ul className="mt-6 grid gap-2.5 text-sm">
-              {crmFeatures.map((f) => (
-                <li key={f} className="flex items-center gap-2">
-                  <Check className="h-4 w-4 shrink-0 text-emerald-500" /> {f}
-                </li>
-              ))}
-            </ul>
-            <Button size="lg" className="mt-6" asChild>
-              <Link href="/crm/cadastro">
-                Criar conta grátis <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-
-          {/* Mockup visual do CRM */}
-          <div className="rounded-xl border bg-background p-2 shadow-lg">
-            <div className="flex items-center gap-1.5 border-b px-3 py-2.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-              <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
-              <span className="ml-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-                <LogoMark className="h-3.5 w-3.5" /> tomasin.com/crm/dashboard
-              </span>
+      {/* CRM grátis — Tomas Finance (bônus, secundário à Intermediação) */}
+      <section id="crm" className="scroll-mt-16 container pb-20">
+        <div className="flex flex-col items-center gap-6 rounded-2xl border bg-card p-6 text-center sm:flex-row sm:justify-between sm:text-left sm:p-8">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-emerald-500/10">
+              <Gift className="h-6 w-6 text-emerald-500" />
             </div>
-            <div className="grid grid-cols-2 gap-3 p-4">
-              <div className="rounded-xl border bg-card p-3">
-                <Wallet className="h-4 w-4 text-primary" />
-                <p className="mt-2 text-xs text-muted-foreground">Saldo total</p>
-                <p className="text-base font-bold">R$ 84.320</p>
-              </div>
-              <div className="rounded-xl border bg-card p-3">
-                <TrendingUp className="h-4 w-4 text-emerald-500" />
-                <p className="mt-2 text-xs text-muted-foreground">Receitas do mês</p>
-                <p className="text-base font-bold text-emerald-500">R$ 32.150</p>
-              </div>
-              <div className="rounded-xl border bg-card p-3">
-                <TrendingDown className="h-4 w-4 text-red-500" />
-                <p className="mt-2 text-xs text-muted-foreground">Despesas do mês</p>
-                <p className="text-base font-bold text-red-500">R$ 18.940</p>
-              </div>
-              <div className="rounded-xl border bg-card p-3">
-                <Sparkles className="h-4 w-4 text-primary" />
-                <p className="mt-2 text-xs text-muted-foreground">CFO Virtual</p>
-                <p className="text-base font-bold">Sempre online</p>
-              </div>
+            <div>
+              <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">Bônus incluso</Badge>
+              <h2 className="mt-1.5 font-display text-xl font-bold tracking-tight sm:text-2xl">
+                Ganhe acesso grátis ao Tomas Finance
+              </h2>
+              <p className="mt-1 max-w-md text-sm text-muted-foreground">
+                Nosso CRM financeiro — dashboard, multi-empresas e CFO Virtual com IA — de graça pra todo cliente Tomasin.
+              </p>
             </div>
           </div>
+          <Button asChild className="shrink-0">
+            <Link href="/crm/cadastro">
+              Criar conta grátis <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
       </section>
 

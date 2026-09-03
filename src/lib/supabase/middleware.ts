@@ -70,10 +70,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Autenticado tentando acessar páginas de auth -> dashboard
+  // Autenticado tentando acessar páginas de auth -> produto principal (Intermediação)
   if (user && isAuthRoute) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/crm/dashboard";
+    redirectUrl.pathname = "/intermediacao/negociacoes";
     return NextResponse.redirect(redirectUrl);
   }
 

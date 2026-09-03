@@ -18,10 +18,12 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Permite voltar para onde o usuário estava tentando ir (ex.: /intermediacao/*),
-  // já que o login é compartilhado entre os produtos. Só aceita caminhos internos.
+  // Permite voltar para onde o usuário estava tentando ir (ex.: /crm/*), já que o
+  // login é compartilhado entre os produtos. Sem destino específico, o produto
+  // principal (Intermediação) é o padrão — o CRM financeiro fica em segundo plano.
+  // Só aceita caminhos internos.
   const next =
-    searchParams.get("next")?.startsWith("/") ? searchParams.get("next")! : "/crm/dashboard";
+    searchParams.get("next")?.startsWith("/") ? searchParams.get("next")! : "/intermediacao/negociacoes";
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
